@@ -36,7 +36,7 @@ body{
   line-height:1.5;
   padding-bottom:80px;
 }
-.wrap{max-width:920px;margin:0 auto;padding:0 24px;}
+.wrap{max-width:760px;margin:0 auto;padding:0 24px;}
 
 header.top{border-bottom:1px solid var(--navy);padding:40px 0 0;}
 header.top .top-row{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px;padding-bottom:22px;}
@@ -49,57 +49,95 @@ h1{font-family:'Noto Serif KR', serif;font-weight:700;font-size:28px;margin:0 0 
 .year-tab[aria-selected="true"]{color:var(--navy);border-bottom-color:var(--amber);}
 .year-tab:hover{color:var(--navy);}
 .year-tab:focus-visible{outline:2px solid var(--amber);outline-offset:-2px;}
-.year-period{font-size:13px;color:var(--slate);padding:14px 0 0;}
+.year-period{font-size:13px;color:var(--slate);padding:14px 0 24px;}
 
-.month-nav{display:flex;align-items:center;justify-content:space-between;margin:20px 0 18px;}
-.month-nav .month-label{font-family:'Noto Serif KR', serif;font-size:20px;font-weight:700;color:var(--navy);min-width:140px;text-align:center;}
-.nav-btn{background:none;border:1px solid var(--paper-line);color:var(--navy);width:36px;height:36px;border-radius:2px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;}
-.nav-btn:hover{background:var(--navy);color:#fff;border-color:var(--navy);}
-.nav-btn:focus-visible{outline:2px solid var(--amber);outline-offset:2px;}
-
-.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:32px;}
 .filter-chip{border:1px solid var(--paper-line);background:#fff;color:var(--slate);font-size:13px;padding:6px 14px;border-radius:999px;cursor:pointer;display:flex;align-items:center;gap:6px;}
 .filter-chip .dot{width:8px;height:8px;border-radius:50%;display:inline-block;}
 .filter-chip[aria-pressed="true"]{background:var(--navy);color:#fff;border-color:var(--navy);}
 .filter-chip[aria-pressed="true"] .dot{outline:1.5px solid #fff;}
 .filter-chip:focus-visible{outline:2px solid var(--amber);outline-offset:2px;}
 
-table.cal{width:100%;border-collapse:collapse;margin-bottom:36px;table-layout:fixed;}
-table.cal th{font-size:12px;font-weight:600;color:var(--slate);padding:8px 0;border-bottom:1px solid var(--navy);text-align:center;}
-table.cal th:first-child, table.cal td:first-child{color:var(--rose);}
-table.cal td{vertical-align:top;border:1px solid var(--paper-line);height:86px;padding:6px;cursor:default;}
-td.has-events{cursor:pointer;}
-td.empty{background:transparent;border-color:transparent;}
-td.today{background:#fff;box-shadow:inset 0 0 0 2px var(--amber);}
-td.selected{background:var(--amber-soft);}
-.day-num{font-size:13px;color:var(--slate);}
-td.today .day-num{color:var(--amber);font-weight:700;}
-.day-dots{display:flex;flex-wrap:wrap;gap:3px;margin-top:6px;}
-.day-dots span{width:6px;height:6px;border-radius:50%;display:block;}
-.day-more{font-size:10px;color:var(--slate);margin-top:2px;}
+.state-msg, .tl-empty{color:var(--grey);font-size:14px;padding:28px 0;text-align:center;}
 
-section.agenda h2{font-family:'Noto Serif KR', serif;font-size:18px;color:var(--navy);border-bottom:1px solid var(--navy);padding-bottom:10px;margin-bottom:4px;display:flex;justify-content:space-between;align-items:baseline;}
-.reset-link{font-family:'Pretendard';font-size:13px;font-weight:400;color:var(--navy-soft);cursor:pointer;text-decoration:underline;}
-.agenda-empty, .state-msg{color:var(--grey);font-size:14px;padding:28px 0;text-align:center;}
+/* 타임라인 */
+.timeline{position:relative;padding-left:26px;margin-bottom:20px;}
+.timeline::before{content:'';position:absolute;left:5px;top:6px;bottom:6px;width:2px;background:var(--paper-line);}
 
-.event-item{display:flex;gap:16px;padding:16px 0;border-bottom:1px solid var(--paper-line);}
-.event-date{min-width:64px;text-align:center;}
-.event-date .d{font-family:'Noto Serif KR', serif;font-size:20px;font-weight:700;color:var(--navy);line-height:1.1;}
-.event-date .m{font-size:11px;color:var(--slate);}
-.event-body{flex:1;}
-.event-title{font-size:15px;font-weight:600;color:var(--ink);margin-bottom:4px;}
-.event-meta{font-size:13px;color:var(--slate);display:flex;flex-wrap:wrap;gap:10px;align-items:center;}
-.type-badge{font-size:11px;padding:2px 9px;border-radius:999px;white-space:nowrap;}
+.tl-month{
+  position:relative;
+  font-family:'Noto Serif KR', serif;
+  font-weight:700;
+  font-size:17px;
+  color:var(--navy);
+  margin:30px 0 14px;
+}
+.tl-month:first-child{margin-top:0;}
+.tl-month::before{
+  content:'';
+  position:absolute;
+  left:-26px;
+  top:6px;
+  width:12px;height:12px;
+  border-radius:50%;
+  background:var(--navy);
+  border:3px solid var(--paper);
+}
 
-footer{max-width:920px;margin:40px auto 0;padding:20px 24px 0;border-top:1px solid var(--paper-line);font-size:12px;color:var(--grey);display:flex;justify-content:space-between;}
+.tl-today{
+  position:relative;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin:18px 0;
+  font-size:12px;
+  font-weight:700;
+  color:var(--amber);
+}
+.tl-today::before{
+  content:'';
+  position:absolute;
+  left:-26px;
+  top:50%;
+  transform:translateY(-50%);
+  width:12px;height:12px;
+  border-radius:50%;
+  background:var(--amber);
+  border:3px solid var(--paper);
+  box-shadow:0 0 0 2px var(--amber);
+}
+.tl-today-line{flex:1;height:1px;background:var(--amber);opacity:0.4;}
+
+.tl-item{position:relative;padding-bottom:22px;}
+.tl-item::before{
+  content:'';
+  position:absolute;
+  left:-22px;
+  top:5px;
+  width:8px;height:8px;
+  border-radius:50%;
+  background:var(--dot, var(--navy));
+}
+.tl-card{
+  background:#fff;
+  border:1px solid var(--paper-line);
+  border-radius:4px;
+  padding:12px 14px;
+}
+.tl-date{font-size:12px;color:var(--slate);font-weight:600;margin-bottom:4px;}
+.tl-title{font-size:15px;font-weight:600;color:var(--ink);margin-bottom:6px;}
+.type-badge{font-size:11px;padding:2px 9px;border-radius:999px;white-space:nowrap;display:inline-block;}
+
+footer{max-width:760px;margin:40px auto 0;padding:20px 24px 0;border-top:1px solid var(--paper-line);font-size:12px;color:var(--grey);display:flex;justify-content:space-between;}
 footer a{color:var(--grey);}
 
 @media (max-width:600px){
-  table.cal td{height:56px;padding:4px;}
-  .day-dots{margin-top:3px;}
   h1{font-size:22px;}
-  .event-item{gap:10px;}
   .year-tab{padding:10px 12px;font-size:14px;}
+  .timeline{padding-left:22px;}
+  .tl-month::before{left:-22px;}
+  .tl-today::before{left:-22px;}
+  .tl-item::before{left:-19px;}
 }
 </style>
 </head>
@@ -123,28 +161,8 @@ footer a{color:var(--grey);}
   <div id="loadingMsg" class="state-msg">일정을 불러오는 중입니다…</div>
 
   <div id="appBody" style="display:none;">
-    <div class="month-nav">
-      <button class="nav-btn" id="prevMonth" aria-label="이전 달">‹</button>
-      <div class="month-label" id="monthLabel"></div>
-      <button class="nav-btn" id="nextMonth" aria-label="다음 달">›</button>
-    </div>
-
     <div class="filters" id="filters" role="group" aria-label="일정 유형 필터"></div>
-
-    <table class="cal" aria-label="월별 일정 캘린더">
-      <thead>
-        <tr>
-          <th scope="col">일</th><th scope="col">월</th><th scope="col">화</th>
-          <th scope="col">수</th><th scope="col">목</th><th scope="col">금</th><th scope="col">토</th>
-        </tr>
-      </thead>
-      <tbody id="calBody"></tbody>
-    </table>
-
-    <section class="agenda">
-      <h2 id="agendaTitle">다가오는 일정 <span class="reset-link" id="resetFilter" style="display:none;">전체 일정 보기</span></h2>
-      <div id="agendaList"></div>
-    </section>
+    <div class="timeline" id="timeline"></div>
   </div>
 </main>
 
@@ -170,21 +188,11 @@ const TYPE_ORDER = ["컨설팅", "모니터링", "보고시작", "보고마감",
 let DATA = null;          // { years: {...}, events: [...] }
 let YEAR_ORDER = [];
 let activeTypes = new Set(TYPE_ORDER);
-let selectedDate = null;
 let activeYear = null;
-let cursor = null;
 
 function todayStr(){
   const t = new Date();
   return `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}-${String(t.getDate()).padStart(2,'0')}`;
-}
-
-// precision이 "week"인 일정은 date~endDate 구간 전체에 걸쳐 표시됩니다.
-function eventCoversDate(e, dateStr){
-  if(e.precision === 'week' && e.endDate){
-    return dateStr >= e.date && dateStr <= e.endDate;
-  }
-  return e.date === dateStr;
 }
 
 function weekLabel(e){
@@ -210,7 +218,6 @@ async function loadData(){
     DATA = await res.json();
     YEAR_ORDER = Object.keys(DATA.years);
     activeYear = pickDefaultYear();
-    cursor = defaultCursorFor(activeYear);
     document.getElementById('loadingMsg').style.display = 'none';
     document.getElementById('appBody').style.display = '';
     renderAll();
@@ -226,14 +233,6 @@ function pickDefaultYear(){
     if(evs.some(e => e.date >= today)) return key;
   }
   return YEAR_ORDER[YEAR_ORDER.length - 1];
-}
-
-function defaultCursorFor(yearKey){
-  const today = todayStr();
-  const evs = DATA.events.filter(e => e.year === yearKey);
-  const upcoming = evs.map(e => e.date).filter(d => d >= today).sort()[0];
-  const base = new Date(upcoming || (evs[0] && evs[0].date) || today);
-  return new Date(base.getFullYear(), base.getMonth(), 1);
 }
 
 function currentEvents(){
@@ -253,8 +252,6 @@ function renderYearTabs(){
     btn.addEventListener('click', () => {
       if(activeYear === key) return;
       activeYear = key;
-      selectedDate = null;
-      cursor = defaultCursorFor(activeYear);
       renderAll();
     });
     el.appendChild(btn);
@@ -283,133 +280,65 @@ function renderFilters(){
   });
 }
 
-function eventsForFilter(){
-  return currentEvents().filter(e => activeTypes.has(e.type));
-}
+function renderTimeline(){
+  const container = document.getElementById('timeline');
+  container.innerHTML = '';
+  const items = currentEvents().filter(e => activeTypes.has(e.type)).sort((a,b)=>a.date.localeCompare(b.date));
 
-function renderCalendar(){
-  const year = cursor.getFullYear();
-  const month = cursor.getMonth();
-  document.getElementById('monthLabel').textContent = `${year}년 ${month+1}월`;
-
-  const firstDay = new Date(year, month, 1).getDay();
-  const daysInMonth = new Date(year, month+1, 0).getDate();
-  const monthCandidates = eventsForFilter();
-
-  const body = document.getElementById('calBody');
-  body.innerHTML = '';
-  let row = document.createElement('tr');
-  for(let i=0;i<firstDay;i++){
-    const td = document.createElement('td');
-    td.className = 'empty';
-    row.appendChild(td);
-  }
-  for(let day=1; day<=daysInMonth; day++){
-    const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
-    const td = document.createElement('td');
-    const dayEvents = monthCandidates.filter(e => eventCoversDate(e, dateStr));
-    if(dateStr === todayStr()) td.classList.add('today');
-    if(dateStr === selectedDate) td.classList.add('selected');
-    if(dayEvents.length){
-      td.classList.add('has-events');
-      td.tabIndex = 0;
-      td.setAttribute('role','button');
-      td.setAttribute('aria-label', `${month+1}월 ${day}일, 일정 ${dayEvents.length}건`);
-      td.addEventListener('click', () => { selectedDate = (selectedDate === dateStr) ? null : dateStr; renderAll(); });
-      td.addEventListener('keydown', (ev) => { if(ev.key==='Enter'||ev.key===' '){ ev.preventDefault(); td.click(); } });
-    }
-    const dots = dayEvents.slice(0,4).map(e => `<span style="background:${TYPE_COLORS[e.type].dot}"></span>`).join('');
-    td.innerHTML = `<div class="day-num">${day}</div><div class="day-dots">${dots}</div>` +
-                    (dayEvents.length > 4 ? `<div class="day-more">+${dayEvents.length-4}</div>` : '');
-    row.appendChild(td);
-    if((firstDay + day) % 7 === 0){
-      body.appendChild(row);
-      row = document.createElement('tr');
-    }
-  }
-  if(row.children.length){
-    while(row.children.length < 7){
-      const td = document.createElement('td');
-      td.className = 'empty';
-      row.appendChild(td);
-    }
-    body.appendChild(row);
-  }
-}
-
-function formatEventDate(dateStr){
-  const d = new Date(dateStr);
-  const weekday = ['일','월','화','수','목','금','토'][d.getDay()];
-  return { day: d.getDate(), month: `${d.getMonth()+1}월 (${weekday})` };
-}
-
-function renderAgenda(){
-  const title = document.getElementById('agendaTitle');
-  const resetLink = document.getElementById('resetFilter');
-  const list = document.getElementById('agendaList');
-
-  let items;
-  if(selectedDate){
-    title.childNodes[0].textContent = `${selectedDate} 일정 `;
-    resetLink.style.display = 'inline';
-    items = currentEvents().filter(e => eventCoversDate(e, selectedDate) && activeTypes.has(e.type));
-  } else {
-    title.childNodes[0].textContent = `${DATA.years[activeYear].label} 전체 일정 `;
-    resetLink.style.display = 'none';
-    items = currentEvents().filter(e => activeTypes.has(e.type)).sort((a,b)=>a.date.localeCompare(b.date));
-  }
-
-  list.innerHTML = '';
   if(items.length === 0){
-    list.innerHTML = '<div class="agenda-empty">해당하는 일정이 없습니다.</div>';
+    container.innerHTML = '<div class="tl-empty">해당하는 일정이 없습니다.</div>';
     return;
   }
+
+  const today = todayStr();
+  let todayInserted = false;
+  let lastMonthKey = null;
+
   items.forEach(e => {
-    const c = TYPE_COLORS[e.type];
-    const isWeek = e.precision === 'week';
-    let dateBlock;
-    if(isWeek && e.roughMonth && e.weekStart && e.weekEnd){
-      const wtxt = e.weekStart === e.weekEnd ? `${e.weekStart}주` : `${e.weekStart}~${e.weekEnd}주`;
-      dateBlock = `<div class="event-date"><div class="d" style="font-size:17px;">${wtxt}</div><div class="m">${e.roughMonth}월</div></div>`;
-    } else if(isWeek){
-      dateBlock = `<div class="event-date"><div class="d" style="font-size:13px;">주간</div><div class="m">${formatEventRange(e)}</div></div>`;
-    } else {
-      const { day, month } = formatEventDate(e.date);
-      dateBlock = `<div class="event-date"><div class="d">${day}</div><div class="m">${month}</div></div>`;
+    if(!todayInserted && e.date >= today){
+      todayInserted = true;
+      const todayEl = document.createElement('div');
+      todayEl.className = 'tl-today';
+      todayEl.innerHTML = `<span>오늘</span><span class="tl-today-line"></span>`;
+      container.appendChild(todayEl);
     }
-    const row = document.createElement('div');
-    row.className = 'event-item';
-    row.innerHTML = `
-      ${dateBlock}
-      <div class="event-body">
-        <div class="event-title">${e.title}</div>
-        <div class="event-meta">
-          <span class="type-badge" style="background:${c.bg};color:${c.text}">${e.type}</span>
-        </div>
+
+    const d = new Date(e.date);
+    const monthKey = `${d.getFullYear()}-${d.getMonth()}`;
+    if(monthKey !== lastMonthKey){
+      lastMonthKey = monthKey;
+      const monthEl = document.createElement('div');
+      monthEl.className = 'tl-month';
+      monthEl.textContent = `${d.getFullYear()}년 ${d.getMonth()+1}월`;
+      container.appendChild(monthEl);
+    }
+
+    const c = TYPE_COLORS[e.type];
+    const item = document.createElement('div');
+    item.className = 'tl-item';
+    item.style.setProperty('--dot', c.dot);
+    item.innerHTML = `
+      <div class="tl-card">
+        <div class="tl-date">${formatEventRange(e)}</div>
+        <div class="tl-title">${e.title}</div>
+        <span class="type-badge" style="background:${c.bg};color:${c.text}">${e.type}</span>
       </div>`;
-    list.appendChild(row);
+    container.appendChild(item);
   });
+
+  if(!todayInserted){
+    const todayEl = document.createElement('div');
+    todayEl.className = 'tl-today';
+    todayEl.innerHTML = `<span>오늘</span><span class="tl-today-line"></span>`;
+    container.appendChild(todayEl);
+  }
 }
 
 function renderAll(){
   renderYearTabs();
   renderFilters();
-  renderCalendar();
-  renderAgenda();
+  renderTimeline();
 }
-
-document.getElementById('prevMonth').addEventListener('click', () => {
-  cursor = new Date(cursor.getFullYear(), cursor.getMonth()-1, 1);
-  renderAll();
-});
-document.getElementById('nextMonth').addEventListener('click', () => {
-  cursor = new Date(cursor.getFullYear(), cursor.getMonth()+1, 1);
-  renderAll();
-});
-document.getElementById('resetFilter').addEventListener('click', () => {
-  selectedDate = null;
-  renderAll();
-});
 
 loadData();
 </script>
