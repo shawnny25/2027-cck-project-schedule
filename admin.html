@@ -146,7 +146,7 @@ td.year-group-empty{color:var(--grey);font-size:12px;font-style:italic;}
     <h2>3. 등록된 일정</h2>
     <table class="evt">
       <thead>
-        <tr><th>날짜</th><th>일정명</th><th>유형</th><th>담당자</th><th></th></tr>
+        <tr><th>날짜</th><th>일정명</th><th>유형</th><th></th></tr>
       </thead>
       <tbody id="evtBody"></tbody>
     </table>
@@ -159,13 +159,30 @@ td.year-group-empty{color:var(--grey);font-size:12px;font-style:italic;}
         <label for="fYear">연차</label>
         <select id="fYear"></select>
       </div>
-      <div>
+      <div style="grid-column:1 / -1;">
         <label for="fDate">날짜</label>
         <input type="date" id="fDate">
         <label style="margin-top:6px;display:flex;align-items:center;gap:6px;font-size:12px;color:var(--slate);">
-          <input type="checkbox" id="fRoughWeek" style="width:auto;"> 정확한 날짜 대신 주간으로 표시
+          <input type="checkbox" id="fRoughWeek" style="width:auto;"> 정확한 날짜 대신 '몇 월 몇 주차'로 대략 표시
         </label>
-        <input type="week" id="fWeek" style="display:none;margin-top:6px;">
+        <div id="fWeekBox" style="display:none;margin-top:8px;grid-template-columns:repeat(4,1fr);gap:8px;">
+          <div>
+            <label for="fRYear" style="font-size:11px;">연도</label>
+            <select id="fRYear"></select>
+          </div>
+          <div>
+            <label for="fRMonth" style="font-size:11px;">월</label>
+            <select id="fRMonth"></select>
+          </div>
+          <div>
+            <label for="fRWeekStart" style="font-size:11px;">시작 주차</label>
+            <select id="fRWeekStart"></select>
+          </div>
+          <div>
+            <label for="fRWeekEnd" style="font-size:11px;">종료 주차</label>
+            <select id="fRWeekEnd"></select>
+          </div>
+        </div>
       </div>
       <div>
         <label for="fTitle">일정명</label>
@@ -176,10 +193,6 @@ td.year-group-empty{color:var(--grey);font-size:12px;font-style:italic;}
         <select id="fType">
           <option>컨설팅</option><option>모니터링</option><option>보고시작</option><option>보고마감</option><option>기타</option>
         </select>
-      </div>
-      <div>
-        <label for="fOwner">담당자</label>
-        <input type="text" id="fOwner" placeholder="예: 홍길동">
       </div>
     </div>
     <div class="form-actions">
@@ -210,47 +223,61 @@ let DATA = null;   // { years, events }
 let SHA = null;
 let editingId = null;
 
-// ── 주간(대략적인 날짜) 처리 헬퍼 ──────────────────────────────
+// ── 주차(대략적인 날짜) 처리 헬퍼 ──────────────────────────────
+// "몇 월 몇 주차"는 1~7일=1주차, 8~14일=2주차 … 식으로 계산합니다(달력상의 몇째 월요일이 아니라 단순 7일 단위).
 function fmtDate(d){
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 }
-// "2026-W50" -> 그 주의 월요일/일요일 날짜
-function isoWeekToRange(weekStr){
-  const [yearStr, weekPart] = weekStr.split('-W');
-  const year = parseInt(yearStr, 10);
-  const week = parseInt(weekPart, 10);
-  const jan4 = new Date(year, 0, 4);
-  const jan4Day = (jan4.getDay() + 6) % 7; // 월요일=0 기준
-  const week1Monday = new Date(jan4);
-  week1Monday.setDate(jan4.getDate() - jan4Day);
-  const monday = new Date(week1Monday);
-  monday.setDate(week1Monday.getDate() + (week - 1) * 7);
-  const sunday = new Date(monday);
-  sunday.setDate(monday.getDate() + 6);
-  return { start: fmtDate(monday), end: fmtDate(sunday) };
+function daysInMonth(year, month){ // month: 1~12
+  return new Date(year, month, 0).getDate();
 }
-// 날짜(YYYY-MM-DD, 해당 주의 월요일) -> "YYYY-Www" (수정 화면에서 주간 입력칸에 되돌려 채울 때 사용)
-function dateToIsoWeek(dateStr){
-  const d = new Date(dateStr);
-  const target = new Date(d.valueOf());
-  const dayNr = (d.getDay() + 6) % 7;
-  target.setDate(target.getDate() - dayNr + 3);
-  const firstThursday = new Date(target.getFullYear(), 0, 4);
-  const diff = target - firstThursday;
-  const week = 1 + Math.round(diff / (7*24*60*60*1000));
-  return `${target.getFullYear()}-W${String(week).padStart(2,'0')}`;
+// year, month(1~12), weekStart~weekEnd(1~5) -> 실제 날짜 구간 (캘린더 표시용)
+function monthWeekRangeToDates(year, month, weekStart, weekEnd){
+  const dim = daysInMonth(year, month);
+  const startDay = Math.min((weekStart - 1) * 7 + 1, dim);
+  const endDay = Math.min(weekEnd * 7, dim);
+  const start = new Date(year, month - 1, startDay);
+  const end = new Date(year, month - 1, endDay);
+  return { start: fmtDate(start), end: fmtDate(end) };
+}
+function weekLabel(e){
+  if(e.weekStart === e.weekEnd) return `${e.roughMonth}월 ${e.weekStart}주차`;
+  return `${e.roughMonth}월 ${e.weekStart}~${e.weekEnd}주차`;
+}
+function populateRoughSelects(){
+  const yearSel = document.getElementById('fRYear');
+  const monthSel = document.getElementById('fRMonth');
+  const startSel = document.getElementById('fRWeekStart');
+  const endSel = document.getElementById('fRWeekEnd');
+  const thisYear = new Date().getFullYear();
+  yearSel.innerHTML = '';
+  for(let y = thisYear - 1; y <= thisYear + 5; y++){
+    yearSel.innerHTML += `<option value="${y}">${y}년</option>`;
+  }
+  monthSel.innerHTML = '';
+  for(let m = 1; m <= 12; m++){
+    monthSel.innerHTML += `<option value="${m}">${m}월</option>`;
+  }
+  let weekOpts = '';
+  for(let w = 1; w <= 5; w++){
+    weekOpts += `<option value="${w}">${w}주차</option>`;
+  }
+  startSel.innerHTML = weekOpts;
+  endSel.innerHTML = weekOpts;
 }
 function formatEventRange(e){
-  if(e.precision === 'week' && e.endDate){
-    return `${e.date} ~ ${e.endDate} (주간)`;
+  if(e.precision === 'week'){
+    if(e.roughMonth && e.weekStart && e.weekEnd) return weekLabel(e);
+    if(e.endDate) return `${e.date} ~ ${e.endDate} (주간)`;
   }
   return e.date;
 }
 
 document.getElementById('fRoughWeek').addEventListener('change', (ev) => {
   document.getElementById('fDate').style.display = ev.target.checked ? 'none' : '';
-  document.getElementById('fWeek').style.display = ev.target.checked ? '' : 'none';
+  document.getElementById('fWeekBox').style.display = ev.target.checked ? 'grid' : 'none';
 });
+populateRoughSelects();
 
 function getConfig(){
   return {
@@ -384,7 +411,6 @@ function renderEventTable(){
         <td>${formatEventRange(e)}</td>
         <td>${e.title}</td>
         <td><span class="type-badge" style="background:${c.bg};color:${c.text}">${e.type}</span></td>
-        <td>${e.owner}</td>
         <td class="row-actions">
           <button data-id="${e.id}" class="edit">수정</button>
           <button data-id="${e.id}" class="del">삭제</button>
@@ -400,13 +426,11 @@ function resetForm(){
   editingId = null;
   document.getElementById('formTitle').textContent = '4. 새 일정 추가';
   document.getElementById('fDate').value = '';
-  document.getElementById('fWeek').value = '';
   document.getElementById('fRoughWeek').checked = false;
   document.getElementById('fDate').style.display = '';
-  document.getElementById('fWeek').style.display = 'none';
+  document.getElementById('fWeekBox').style.display = 'none';
   document.getElementById('fTitle').value = '';
   document.getElementById('fType').value = '컨설팅';
-  document.getElementById('fOwner').value = '';
   document.getElementById('btnAddOrUpdate').textContent = '목록에 추가';
   document.getElementById('btnCancelEdit').style.display = 'none';
 }
@@ -417,20 +441,23 @@ function startEdit(id){
   editingId = id;
   document.getElementById('formTitle').textContent = '4. 일정 수정';
   document.getElementById('fYear').value = e.year;
-  const isWeek = e.precision === 'week' && e.endDate;
+  const isWeek = e.precision === 'week';
   document.getElementById('fRoughWeek').checked = isWeek;
   document.getElementById('fDate').style.display = isWeek ? 'none' : '';
-  document.getElementById('fWeek').style.display = isWeek ? '' : 'none';
+  document.getElementById('fWeekBox').style.display = isWeek ? 'grid' : 'none';
   if(isWeek){
-    document.getElementById('fWeek').value = dateToIsoWeek(e.date);
     document.getElementById('fDate').value = '';
+    if(e.roughMonth && e.weekStart && e.weekEnd){
+      document.getElementById('fRYear').value = e.roughYear || new Date(e.date).getFullYear();
+      document.getElementById('fRMonth').value = e.roughMonth;
+      document.getElementById('fRWeekStart').value = e.weekStart;
+      document.getElementById('fRWeekEnd').value = e.weekEnd;
+    }
   } else {
     document.getElementById('fDate').value = e.date;
-    document.getElementById('fWeek').value = '';
   }
   document.getElementById('fTitle').value = e.title;
   document.getElementById('fType').value = e.type;
-  document.getElementById('fOwner').value = e.owner;
   document.getElementById('btnAddOrUpdate').textContent = '수정 완료';
   document.getElementById('btnCancelEdit').style.display = '';
   document.getElementById('formSection').scrollIntoView({behavior:'smooth'});
@@ -449,16 +476,22 @@ document.getElementById('btnAddOrUpdate').addEventListener('click', () => {
   const isRough = document.getElementById('fRoughWeek').checked;
   const title = document.getElementById('fTitle').value.trim();
   const type = document.getElementById('fType').value;
-  const owner = document.getElementById('fOwner').value.trim();
 
-  let date, endDate, precision;
+  let date, endDate, precision, roughYear, roughMonth, weekStart, weekEnd;
   if(isRough){
-    const weekVal = document.getElementById('fWeek').value;
-    if(!weekVal || !title){
-      alert('주간과 일정명은 필수입니다.');
+    roughYear = parseInt(document.getElementById('fRYear').value, 10);
+    roughMonth = parseInt(document.getElementById('fRMonth').value, 10);
+    weekStart = parseInt(document.getElementById('fRWeekStart').value, 10);
+    weekEnd = parseInt(document.getElementById('fRWeekEnd').value, 10);
+    if(!title){
+      alert('일정명은 필수입니다.');
       return;
     }
-    const range = isoWeekToRange(weekVal);
+    if(weekEnd < weekStart){
+      alert('종료 주차는 시작 주차보다 빠를 수 없습니다.');
+      return;
+    }
+    const range = monthWeekRangeToDates(roughYear, roughMonth, weekStart, weekEnd);
     date = range.start;
     endDate = range.end;
     precision = 'week';
@@ -472,12 +505,15 @@ document.getElementById('btnAddOrUpdate').addEventListener('click', () => {
     precision = 'day';
   }
 
+  const base = { year, date, endDate, precision, title, type };
+  if(precision === 'week') Object.assign(base, { roughYear, roughMonth, weekStart, weekEnd });
+
   if(editingId){
     const idx = DATA.events.findIndex(e => e.id === editingId);
-    if(idx > -1) DATA.events[idx] = { id: editingId, year, date, endDate, precision, title, type, owner };
+    if(idx > -1) DATA.events[idx] = { id: editingId, ...base };
   } else {
     const id = 'e' + Date.now().toString(36) + Math.random().toString(36).slice(2,6);
-    DATA.events.push({ id, year, date, endDate, precision, title, type, owner });
+    DATA.events.push({ id, ...base });
   }
   renderEventTable();
   resetForm();
