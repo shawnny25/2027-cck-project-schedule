@@ -161,10 +161,11 @@ const DATA_URL = './events.json'; // events.json이 같은 폴더에 있어야 �
 const TYPE_COLORS = {
   "컨설팅": { dot: "#c1852f", bg: "#f3e2c4", text: "#7a5217" },
   "모니터링": { dot: "#29685c", bg: "#d9e9e2", text: "#1c4038" },
+  "보고시작": { dot: "#3f6690", bg: "#dbe4ee", text: "#24435f" },
   "보고마감": { dot: "#a8493f", bg: "#f1dcd6", text: "#7a2f27" },
   "기타": { dot: "#6d7484", bg: "#e4e2da", text: "#454b56" }
 };
-const TYPE_ORDER = ["컨설팅", "모니터링", "보고마감", "기타"];
+const TYPE_ORDER = ["컨설팅", "모니터링", "보고시작", "보고마감", "기타"];
 
 let DATA = null;          // { years: {...}, events: [...] }
 let YEAR_ORDER = [];
@@ -176,6 +177,24 @@ let cursor = null;
 function todayStr(){
   const t = new Date();
   return `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}-${String(t.getDate()).padStart(2,'0')}`;
+}
+
+// precision이 "week"인 일정은 date~endDate 구간 전체에 걸쳐 표시됩니다.
+function eventCoversDate(e, dateStr){
+  if(e.precision === 'week' && e.endDate){
+    return dateStr >= e.date && dateStr <= e.endDate;
+  }
+  return e.date === dateStr;
+}
+
+function formatEventRange(e){
+  const wd = ['일','월','화','수','목','금','토'];
+  if(e.precision === 'week' && e.endDate){
+    const s = new Date(e.date), en = new Date(e.endDate);
+    return `${s.getMonth()+1}.${String(s.getDate()).padStart(2,'0')}(${wd[s.getDay()]}) ~ ${en.getMonth()+1}.${String(en.getDate()).padStart(2,'0')}(${wd[en.getDay()]})`;
+  }
+  const d = new Date(e.date);
+  return `${d.getMonth()+1}.${String(d.getDate()).padStart(2,'0')}(${wd[d.getDay()]})`;
 }
 
 async function loadData(){
@@ -258,11 +277,8 @@ function renderFilters(){
   });
 }
 
-function eventsInMonth(year, month){
-  return currentEvents().filter(e => {
-    const d = new Date(e.date);
-    return d.getFullYear() === year && d.getMonth() === month && activeTypes.has(e.type);
-  });
+function eventsForFilter(){
+  return currentEvents().filter(e => activeTypes.has(e.type));
 }
 
 function renderCalendar(){
@@ -272,9 +288,7 @@ function renderCalendar(){
 
   const firstDay = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month+1, 0).getDate();
-  const monthEvents = eventsInMonth(year, month);
-  const byDate = {};
-  monthEvents.forEach(e => { (byDate[e.date] = byDate[e.date] || []).push(e); });
+  const monthCandidates = eventsForFilter();
 
   const body = document.getElementById('calBody');
   body.innerHTML = '';
@@ -287,7 +301,7 @@ function renderCalendar(){
   for(let day=1; day<=daysInMonth; day++){
     const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
     const td = document.createElement('td');
-    const dayEvents = byDate[dateStr] || [];
+    const dayEvents = monthCandidates.filter(e => eventCoversDate(e, dateStr));
     if(dateStr === todayStr()) td.classList.add('today');
     if(dateStr === selectedDate) td.classList.add('selected');
     if(dayEvents.length){
@@ -332,7 +346,7 @@ function renderAgenda(){
   if(selectedDate){
     title.childNodes[0].textContent = `${selectedDate} 일정 `;
     resetLink.style.display = 'inline';
-    items = currentEvents().filter(e => e.date === selectedDate && activeTypes.has(e.type));
+    items = currentEvents().filter(e => eventCoversDate(e, selectedDate) && activeTypes.has(e.type));
   } else {
     title.childNodes[0].textContent = `${DATA.years[activeYear].label} 전체 일정 `;
     resetLink.style.display = 'none';
@@ -345,12 +359,15 @@ function renderAgenda(){
     return;
   }
   items.forEach(e => {
-    const { day, month } = formatEventDate(e.date);
     const c = TYPE_COLORS[e.type];
+    const isWeek = e.precision === 'week' && e.endDate;
+    const dateBlock = isWeek
+      ? `<div class="event-date"><div class="d" style="font-size:13px;">주간</div><div class="m">${formatEventRange(e)}</div></div>`
+      : (() => { const { day, month } = formatEventDate(e.date); return `<div class="event-date"><div class="d">${day}</div><div class="m">${month}</div></div>`; })();
     const row = document.createElement('div');
     row.className = 'event-item';
     row.innerHTML = `
-      <div class="event-date"><div class="d">${day}</div><div class="m">${month}</div></div>
+      ${dateBlock}
       <div class="event-body">
         <div class="event-title">${e.title}</div>
         <div class="event-meta">
