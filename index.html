@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>사업 흐름 계획표 · KCOC</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<style>
+@font-face {
+  font-family: 'Pretendard';
+  src: url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/woff2/PretendardVariable.woff2') format('woff2-variations');
+  font-weight: 45 920;
+}
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;700&display=swap');
+
+:root{
+  --navy: #17233d;
+  --navy-soft: #2c3b5c;
+  --slate: #5b6579;
+  --paper: #f4f3ee;
+  --paper-line: #dedad0;
+  --ink: #1c2130;
+  --amber: #c1852f;
+  --amber-soft: #f3e2c4;
+  --teal: #29685c;
+  --rose: #a8493f;
+  --grey: #6d7484;
+}
+
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:'Pretendard', -apple-system, 'Malgun Gothic', sans-serif;
+  line-height:1.5;
+  padding-bottom:80px;
+}
+.wrap{max-width:920px;margin:0 auto;padding:0 24px;}
+
+header.top{border-bottom:1px solid var(--navy);padding:40px 0 0;}
+header.top .top-row{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px;padding-bottom:22px;}
+h1{font-family:'Noto Serif KR', serif;font-weight:700;font-size:28px;margin:0 0 6px;color:var(--navy);letter-spacing:-0.01em;}
+.subtitle{color:var(--slate);font-size:14px;margin:0;}
+.org-tag{font-size:13px;color:var(--navy-soft);border:1px solid var(--navy-soft);padding:5px 12px;border-radius:2px;white-space:nowrap;}
+
+.year-tabs{display:flex;gap:2px;}
+.year-tab{background:none;border:none;border-bottom:3px solid transparent;color:var(--slate);font-family:'Pretendard';font-size:15px;font-weight:600;padding:12px 18px;cursor:pointer;margin-bottom:-1px;}
+.year-tab[aria-selected="true"]{color:var(--navy);border-bottom-color:var(--amber);}
+.year-tab:hover{color:var(--navy);}
+.year-tab:focus-visible{outline:2px solid var(--amber);outline-offset:-2px;}
+.year-period{font-size:13px;color:var(--slate);padding:14px 0 0;}
+
+.month-nav{display:flex;align-items:center;justify-content:space-between;margin:20px 0 18px;}
+.month-nav .month-label{font-family:'Noto Serif KR', serif;font-size:20px;font-weight:700;color:var(--navy);min-width:140px;text-align:center;}
+.nav-btn{background:none;border:1px solid var(--paper-line);color:var(--navy);width:36px;height:36px;border-radius:2px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;}
+.nav-btn:hover{background:var(--navy);color:#fff;border-color:var(--navy);}
+.nav-btn:focus-visible{outline:2px solid var(--amber);outline-offset:2px;}
+
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;}
+.filter-chip{border:1px solid var(--paper-line);background:#fff;color:var(--slate);font-size:13px;padding:6px 14px;border-radius:999px;cursor:pointer;display:flex;align-items:center;gap:6px;}
+.filter-chip .dot{width:8px;height:8px;border-radius:50%;display:inline-block;}
+.filter-chip[aria-pressed="true"]{background:var(--navy);color:#fff;border-color:var(--navy);}
+.filter-chip[aria-pressed="true"] .dot{outline:1.5px solid #fff;}
+.filter-chip:focus-visible{outline:2px solid var(--amber);outline-offset:2px;}
+
+table.cal{width:100%;border-collapse:collapse;margin-bottom:36px;table-layout:fixed;}
+table.cal th{font-size:12px;font-weight:600;color:var(--slate);padding:8px 0;border-bottom:1px solid var(--navy);text-align:center;}
+table.cal th:first-child, table.cal td:first-child{color:var(--rose);}
+table.cal td{vertical-align:top;border:1px solid var(--paper-line);height:86px;padding:6px;cursor:default;}
+td.has-events{cursor:pointer;}
+td.empty{background:transparent;border-color:transparent;}
+td.today{background:#fff;box-shadow:inset 0 0 0 2px var(--amber);}
+td.selected{background:var(--amber-soft);}
+.day-num{font-size:13px;color:var(--slate);}
+td.today .day-num{color:var(--amber);font-weight:700;}
+.day-dots{display:flex;flex-wrap:wrap;gap:3px;margin-top:6px;}
+.day-dots span{width:6px;height:6px;border-radius:50%;display:block;}
+.day-more{font-size:10px;color:var(--slate);margin-top:2px;}
+
+section.agenda h2{font-family:'Noto Serif KR', serif;font-size:18px;color:var(--navy);border-bottom:1px solid var(--navy);padding-bottom:10px;margin-bottom:4px;display:flex;justify-content:space-between;align-items:baseline;}
+.reset-link{font-family:'Pretendard';font-size:13px;font-weight:400;color:var(--navy-soft);cursor:pointer;text-decoration:underline;}
+.agenda-empty, .state-msg{color:var(--grey);font-size:14px;padding:28px 0;text-align:center;}
+
+.event-item{display:flex;gap:16px;padding:16px 0;border-bottom:1px solid var(--paper-line);}
+.event-date{min-width:64px;text-align:center;}
+.event-date .d{font-family:'Noto Serif KR', serif;font-size:20px;font-weight:700;color:var(--navy);line-height:1.1;}
+.event-date .m{font-size:11px;color:var(--slate);}
+.event-body{flex:1;}
+.event-title{font-size:15px;font-weight:600;color:var(--ink);margin-bottom:4px;}
+.event-meta{font-size:13px;color:var(--slate);display:flex;flex-wrap:wrap;gap:10px;align-items:center;}
+.type-badge{font-size:11px;padding:2px 9px;border-radius:999px;white-space:nowrap;}
+
+footer{max-width:920px;margin:40px auto 0;padding:20px 24px 0;border-top:1px solid var(--paper-line);font-size:12px;color:var(--grey);display:flex;justify-content:space-between;}
+footer a{color:var(--grey);}
+
+@media (max-width:600px){
+  table.cal td{height:56px;padding:4px;}
+  .day-dots{margin-top:3px;}
+  h1{font-size:22px;}
+  .event-item{gap:10px;}
+  .year-tab{padding:10px 12px;font-size:14px;}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="top-row">
+      <div>
+        <h1>사업 흐름 계획표</h1>
+        <p class="subtitle">해외 사업 운영에 참고할 일정을 안내합니다</p>
+      </div>
+      <span class="org-tag">KCOC 파트너십지원부 · 수행기관 공유용</span>
+    </div>
+    <div class="year-tabs" id="yearTabs" role="tablist" aria-label="사업 연차 선택"></div>
+  </div>
+</header>
+
+<main class="wrap">
+  <p class="year-period" id="yearPeriod"></p>
+  <div id="loadingMsg" class="state-msg">일정을 불러오는 중입니다…</div>
+
+  <div id="appBody" style="display:none;">
+    <div class="month-nav">
+      <button class="nav-btn" id="prevMonth" aria-label="이전 달">‹</button>
+      <div class="month-label" id="monthLabel"></div>
+      <button class="nav-btn" id="nextMonth" aria-label="다음 달">›</button>
+    </div>
+
+    <div class="filters" id="filters" role="group" aria-label="일정 유형 필터"></div>
+
+    <table class="cal" aria-label="월별 일정 캘린더">
+      <thead>
+        <tr>
+          <th scope="col">일</th><th scope="col">월</th><th scope="col">화</th>
+          <th scope="col">수</th><th scope="col">목</th><th scope="col">금</th><th scope="col">토</th>
+        </tr>
+      </thead>
+      <tbody id="calBody"></tbody>
+    </table>
+
+    <section class="agenda">
+      <h2 id="agendaTitle">다가오는 일정 <span class="reset-link" id="resetFilter" style="display:none;">전체 일정 보기</span></h2>
+      <div id="agendaList"></div>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap" style="max-width:none;padding:0;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+    <span>일정 관련 문의: KCOC 파트너십지원부</span>
+    <a href="./admin.html">운영진 전용</a>
+  </div>
+</footer>
+
+<script>
+const DATA_URL = './events.json'; // events.json이 같은 폴더에 있어야 합니다.
+
+const TYPE_COLORS = {
+  "컨설팅": { dot: "#c1852f", bg: "#f3e2c4", text: "#7a5217" },
+  "모니터링": { dot: "#29685c", bg: "#d9e9e2", text: "#1c4038" },
+  "보고마감": { dot: "#a8493f", bg: "#f1dcd6", text: "#7a2f27" },
+  "기타": { dot: "#6d7484", bg: "#e4e2da", text: "#454b56" }
+};
+const TYPE_ORDER = ["컨설팅", "모니터링", "보고마감", "기타"];
+
+let DATA = null;          // { years: {...}, events: [...] }
+let YEAR_ORDER = [];
+let activeTypes = new Set(TYPE_ORDER);
+let selectedDate = null;
+let activeYear = null;
+let cursor = null;
+
+function todayStr(){
+  const t = new Date();
+  return `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}-${String(t.getDate()).padStart(2,'0')}`;
+}
+
+async function loadData(){
+  try{
+    const res = await fetch(DATA_URL, { cache: 'no-store' });
+    if(!res.ok) throw new Error('불러오기 실패');
+    DATA = await res.json();
+    YEAR_ORDER = Object.keys(DATA.years);
+    activeYear = pickDefaultYear();
+    cursor = defaultCursorFor(activeYear);
+    document.getElementById('loadingMsg').style.display = 'none';
+    document.getElementById('appBody').style.display = '';
+    renderAll();
+  }catch(err){
+    document.getElementById('loadingMsg').textContent = '일정을 불러오지 못했습니다. events.json 파일 위치를 확인해주세요.';
+  }
+}
+
+function pickDefaultYear(){
+  const today = todayStr();
+  for(const key of YEAR_ORDER){
+    const evs = DATA.events.filter(e => e.year === key);
+    if(evs.some(e => e.date >= today)) return key;
+  }
+  return YEAR_ORDER[YEAR_ORDER.length - 1];
+}
+
+function defaultCursorFor(yearKey){
+  const today = todayStr();
+  const evs = DATA.events.filter(e => e.year === yearKey);
+  const upcoming = evs.map(e => e.date).filter(d => d >= today).sort()[0];
+  const base = new Date(upcoming || (evs[0] && evs[0].date) || today);
+  return new Date(base.getFullYear(), base.getMonth(), 1);
+}
+
+function currentEvents(){
+  return DATA.events.filter(e => e.year === activeYear);
+}
+
+function renderYearTabs(){
+  const el = document.getElementById('yearTabs');
+  el.innerHTML = '';
+  YEAR_ORDER.forEach(key => {
+    const btn = document.createElement('button');
+    btn.className = 'year-tab';
+    btn.type = 'button';
+    btn.role = 'tab';
+    btn.setAttribute('aria-selected', key === activeYear);
+    btn.textContent = DATA.years[key].label;
+    btn.addEventListener('click', () => {
+      if(activeYear === key) return;
+      activeYear = key;
+      selectedDate = null;
+      cursor = defaultCursorFor(activeYear);
+      renderAll();
+    });
+    el.appendChild(btn);
+  });
+  document.getElementById('yearPeriod').textContent = DATA.years[activeYear].period;
+}
+
+function renderFilters(){
+  const el = document.getElementById('filters');
+  el.innerHTML = '';
+  TYPE_ORDER.forEach(type => {
+    const btn = document.createElement('button');
+    btn.className = 'filter-chip';
+    btn.type = 'button';
+    btn.setAttribute('aria-pressed', activeTypes.has(type));
+    btn.innerHTML = `<span class="dot" style="background:${TYPE_COLORS[type].dot}"></span>${type}`;
+    btn.addEventListener('click', () => {
+      if(activeTypes.has(type)){
+        if(activeTypes.size > 1) activeTypes.delete(type);
+      } else {
+        activeTypes.add(type);
+      }
+      renderAll();
+    });
+    el.appendChild(btn);
+  });
+}
+
+function eventsInMonth(year, month){
+  return currentEvents().filter(e => {
+    const d = new Date(e.date);
+    return d.getFullYear() === year && d.getMonth() === month && activeTypes.has(e.type);
+  });
+}
+
+function renderCalendar(){
+  const year = cursor.getFullYear();
+  const month = cursor.getMonth();
+  document.getElementById('monthLabel').textContent = `${year}년 ${month+1}월`;
+
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month+1, 0).getDate();
+  const monthEvents = eventsInMonth(year, month);
+  const byDate = {};
+  monthEvents.forEach(e => { (byDate[e.date] = byDate[e.date] || []).push(e); });
+
+  const body = document.getElementById('calBody');
+  body.innerHTML = '';
+  let row = document.createElement('tr');
+  for(let i=0;i<firstDay;i++){
+    const td = document.createElement('td');
+    td.className = 'empty';
+    row.appendChild(td);
+  }
+  for(let day=1; day<=daysInMonth; day++){
+    const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+    const td = document.createElement('td');
+    const dayEvents = byDate[dateStr] || [];
+    if(dateStr === todayStr()) td.classList.add('today');
+    if(dateStr === selectedDate) td.classList.add('selected');
+    if(dayEvents.length){
+      td.classList.add('has-events');
+      td.tabIndex = 0;
+      td.setAttribute('role','button');
+      td.setAttribute('aria-label', `${month+1}월 ${day}일, 일정 ${dayEvents.length}건`);
+      td.addEventListener('click', () => { selectedDate = (selectedDate === dateStr) ? null : dateStr; renderAll(); });
+      td.addEventListener('keydown', (ev) => { if(ev.key==='Enter'||ev.key===' '){ ev.preventDefault(); td.click(); } });
+    }
+    const dots = dayEvents.slice(0,4).map(e => `<span style="background:${TYPE_COLORS[e.type].dot}"></span>`).join('');
+    td.innerHTML = `<div class="day-num">${day}</div><div class="day-dots">${dots}</div>` +
+                    (dayEvents.length > 4 ? `<div class="day-more">+${dayEvents.length-4}</div>` : '');
+    row.appendChild(td);
+    if((firstDay + day) % 7 === 0){
+      body.appendChild(row);
+      row = document.createElement('tr');
+    }
+  }
+  if(row.children.length){
+    while(row.children.length < 7){
+      const td = document.createElement('td');
+      td.className = 'empty';
+      row.appendChild(td);
+    }
+    body.appendChild(row);
+  }
+}
+
+function formatEventDate(dateStr){
+  const d = new Date(dateStr);
+  const weekday = ['일','월','화','수','목','금','토'][d.getDay()];
+  return { day: d.getDate(), month: `${d.getMonth()+1}월 (${weekday})` };
+}
+
+function renderAgenda(){
+  const title = document.getElementById('agendaTitle');
+  const resetLink = document.getElementById('resetFilter');
+  const list = document.getElementById('agendaList');
+
+  let items;
+  if(selectedDate){
+    title.childNodes[0].textContent = `${selectedDate} 일정 `;
+    resetLink.style.display = 'inline';
+    items = currentEvents().filter(e => e.date === selectedDate && activeTypes.has(e.type));
+  } else {
+    title.childNodes[0].textContent = `${DATA.years[activeYear].label} 전체 일정 `;
+    resetLink.style.display = 'none';
+    items = currentEvents().filter(e => activeTypes.has(e.type)).sort((a,b)=>a.date.localeCompare(b.date));
+  }
+
+  list.innerHTML = '';
+  if(items.length === 0){
+    list.innerHTML = '<div class="agenda-empty">해당하는 일정이 없습니다.</div>';
+    return;
+  }
+  items.forEach(e => {
+    const { day, month } = formatEventDate(e.date);
+    const c = TYPE_COLORS[e.type];
+    const row = document.createElement('div');
+    row.className = 'event-item';
+    row.innerHTML = `
+      <div class="event-date"><div class="d">${day}</div><div class="m">${month}</div></div>
+      <div class="event-body">
+        <div class="event-title">${e.title}</div>
+        <div class="event-meta">
+          <span class="type-badge" style="background:${c.bg};color:${c.text}">${e.type}</span>
+          <span>${e.project}</span>
+          <span>담당 ${e.owner}</span>
+        </div>
+      </div>`;
+    list.appendChild(row);
+  });
+}
+
+function renderAll(){
+  renderYearTabs();
+  renderFilters();
+  renderCalendar();
+  renderAgenda();
+}
+
+document.getElementById('prevMonth').addEventListener('click', () => {
+  cursor = new Date(cursor.getFullYear(), cursor.getMonth()-1, 1);
+  renderAll();
+});
+document.getElementById('nextMonth').addEventListener('click', () => {
+  cursor = new Date(cursor.getFullYear(), cursor.getMonth()+1, 1);
+  renderAll();
+});
+document.getElementById('resetFilter').addEventListener('click', () => {
+  selectedDate = null;
+  renderAll();
+});
+
+loadData();
+</script>
+</body>
+</html>

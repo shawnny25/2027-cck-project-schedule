@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>일정 관리 · 사업 흐름 계획표</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<style>
+@font-face {
+  font-family: 'Pretendard';
+  src: url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/woff2/PretendardVariable.woff2') format('woff2-variations');
+  font-weight: 45 920;
+}
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;700&display=swap');
+
+:root{
+  --navy:#17233d; --navy-soft:#2c3b5c; --slate:#5b6579;
+  --paper:#f4f3ee; --paper-line:#dedad0; --ink:#1c2130;
+  --amber:#c1852f; --amber-soft:#f3e2c4; --rose:#a8493f; --rose-soft:#f1dcd6;
+  --teal:#29685c; --teal-soft:#d9e9e2; --grey:#6d7484;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{background:var(--paper);color:var(--ink);font-family:'Pretendard',-apple-system,'Malgun Gothic',sans-serif;line-height:1.5;padding-bottom:80px;}
+.wrap{max-width:760px;margin:0 auto;padding:0 24px;}
+header.top{border-bottom:1px solid var(--navy);padding:32px 0 20px;margin-bottom:28px;}
+h1{font-family:'Noto Serif KR',serif;font-weight:700;font-size:24px;margin:0 0 6px;color:var(--navy);}
+.subtitle{color:var(--slate);font-size:13px;margin:0;}
+
+section{margin-bottom:36px;}
+h2{font-family:'Noto Serif KR',serif;font-size:16px;color:var(--navy);border-bottom:1px solid var(--paper-line);padding-bottom:8px;margin-bottom:16px;}
+.hint{font-size:12px;color:var(--grey);margin:-8px 0 14px;line-height:1.6;}
+.hint a{color:var(--navy-soft);}
+
+.field-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 16px;}
+label{display:block;font-size:12px;color:var(--slate);margin-bottom:4px;}
+input[type=text], input[type=password], input[type=date], select{
+  width:100%;padding:9px 10px;border:1px solid var(--paper-line);border-radius:3px;
+  font-family:'Pretendard';font-size:14px;background:#fff;color:var(--ink);
+}
+input:focus, select:focus{outline:2px solid var(--amber);outline-offset:1px;border-color:var(--amber);}
+
+.btn{
+  font-family:'Pretendard';font-size:14px;font-weight:600;
+  padding:10px 20px;border-radius:3px;border:1px solid var(--navy);
+  background:var(--navy);color:#fff;cursor:pointer;
+}
+.btn:hover{background:var(--navy-soft);}
+.btn.secondary{background:#fff;color:var(--navy);}
+.btn.secondary:hover{background:var(--paper-line);}
+.btn.danger{background:#fff;color:var(--rose);border-color:var(--rose-soft);font-weight:500;font-size:13px;padding:5px 12px;}
+.btn.danger:hover{background:var(--rose-soft);}
+.btn:disabled{opacity:0.5;cursor:not-allowed;}
+
+.year-meta{display:grid;grid-template-columns:1fr 2fr;gap:10px;align-items:center;margin-bottom:10px;}
+.year-meta .yk{font-size:13px;font-weight:600;color:var(--navy);}
+
+table.evt{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:14px;}
+table.evt th{text-align:left;font-size:11px;color:var(--slate);border-bottom:1px solid var(--navy);padding:6px 6px;}
+table.evt td{border-bottom:1px solid var(--paper-line);padding:8px 6px;vertical-align:middle;}
+table.evt tr:hover td{background:#fff;}
+.type-badge{font-size:11px;padding:2px 8px;border-radius:999px;white-space:nowrap;}
+.row-actions{display:flex;gap:6px;}
+.row-actions button{background:none;border:none;font-size:12px;cursor:pointer;color:var(--navy-soft);text-decoration:underline;padding:0;}
+.row-actions button.del{color:var(--rose);}
+
+.status{font-size:13px;padding:10px 12px;border-radius:3px;margin-top:12px;display:none;}
+.status.show{display:block;}
+.status.ok{background:var(--teal-soft);color:#1c4038;}
+.status.err{background:var(--rose-soft);color:#7a2f27;}
+.status.pending{background:#fff;border:1px solid var(--paper-line);color:var(--slate);}
+
+#formSection{display:none;}
+#eventsSection{display:none;}
+.form-actions{display:flex;gap:10px;margin-top:14px;}
+
+@media (max-width:560px){
+  .field-grid{grid-template-columns:1fr;}
+  .year-meta{grid-template-columns:1fr;}
+  table.evt{font-size:12px;}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <h1>일정 관리</h1>
+    <p class="subtitle">사업 흐름 계획표 · 운영진 전용 페이지 — 이 화면의 링크는 외부에 공유하지 마세요</p>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section id="connectSection">
+    <h2>1. GitHub 연결</h2>
+    <p class="hint">
+      Fine-grained personal access token이 필요합니다.
+      <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">github.com/settings/personal-access-tokens/new</a>
+      에서 이 저장소 하나만 선택하고, Repository permissions → Contents를 "Read and write"로 지정해서 발급하세요.
+      토큰은 이 브라우저에만 저장되며(세션 종료 시 삭제), 파일에는 절대 포함되지 않습니다.
+    </p>
+    <div class="field-grid">
+      <div>
+        <label for="cfgOwner">GitHub 계정명 (owner)</label>
+        <input type="text" id="cfgOwner" placeholder="예: kcoc-partnership">
+      </div>
+      <div>
+        <label for="cfgRepo">저장소 이름 (repo)</label>
+        <input type="text" id="cfgRepo" placeholder="예: schedule">
+      </div>
+      <div>
+        <label for="cfgBranch">브랜치</label>
+        <input type="text" id="cfgBranch" value="main">
+      </div>
+      <div>
+        <label for="cfgPath">데이터 파일 경로</label>
+        <input type="text" id="cfgPath" value="events.json">
+      </div>
+    </div>
+    <div style="margin-top:12px;">
+      <label for="cfgToken">Personal Access Token</label>
+      <input type="password" id="cfgToken" placeholder="github_pat_...">
+    </div>
+    <div class="form-actions">
+      <button class="btn" id="btnLoad">불러오기</button>
+    </div>
+    <div class="status" id="connectStatus"></div>
+  </section>
+
+  <section id="eventsSection">
+    <h2>2. 연차별 기간 문구</h2>
+    <div id="yearMetaBox"></div>
+
+    <h2>3. 등록된 일정</h2>
+    <table class="evt">
+      <thead>
+        <tr><th>연차</th><th>날짜</th><th>일정명</th><th>사업명</th><th>유형</th><th>담당자</th><th></th></tr>
+      </thead>
+      <tbody id="evtBody"></tbody>
+    </table>
+  </section>
+
+  <section id="formSection">
+    <h2 id="formTitle">4. 새 일정 추가</h2>
+    <div class="field-grid">
+      <div>
+        <label for="fYear">연차</label>
+        <select id="fYear"></select>
+      </div>
+      <div>
+        <label for="fDate">날짜</label>
+        <input type="date" id="fDate">
+      </div>
+      <div>
+        <label for="fTitle">일정명</label>
+        <input type="text" id="fTitle" placeholder="예: 사업 조정 컨설팅">
+      </div>
+      <div>
+        <label for="fProject">관련 사업명</label>
+        <input type="text" id="fProject" placeholder="예: OO사업">
+      </div>
+      <div>
+        <label for="fType">유형</label>
+        <select id="fType">
+          <option>컨설팅</option><option>모니터링</option><option>보고마감</option><option>기타</option>
+        </select>
+      </div>
+      <div>
+        <label for="fOwner">담당자</label>
+        <input type="text" id="fOwner" placeholder="예: 홍길동">
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn secondary" id="btnAddOrUpdate">목록에 추가</button>
+      <button class="btn secondary" id="btnCancelEdit" style="display:none;">수정 취소</button>
+    </div>
+  </section>
+
+  <section id="saveSection" style="display:none;">
+    <h2>5. GitHub에 저장</h2>
+    <p class="hint">저장 버튼을 누르면 events.json이 즉시 커밋됩니다. GitHub Pages가 다시 빌드되기까지 약 30초~2분 정도 걸릴 수 있습니다.</p>
+    <button class="btn" id="btnSave">GitHub에 저장</button>
+    <div class="status" id="saveStatus"></div>
+  </section>
+
+</main>
+
+<script>
+const TYPE_COLORS = {
+  "컨설팅": { bg: "#f3e2c4", text: "#7a5217" },
+  "모니터링": { bg: "#d9e9e2", text: "#1c4038" },
+  "보고마감": { bg: "#f1dcd6", text: "#7a2f27" },
+  "기타": { bg: "#e4e2da", text: "#454b56" }
+};
+
+let DATA = null;   // { years, events }
+let SHA = null;
+let editingId = null;
+
+function getConfig(){
+  return {
+    owner: document.getElementById('cfgOwner').value.trim(),
+    repo: document.getElementById('cfgRepo').value.trim(),
+    branch: document.getElementById('cfgBranch').value.trim() || 'main',
+    path: document.getElementById('cfgPath').value.trim() || 'events.json',
+    token: document.getElementById('cfgToken').value.trim()
+  };
+}
+
+function saveConfigToStorage(cfg){
+  localStorage.setItem('sched_admin_cfg', JSON.stringify({owner:cfg.owner, repo:cfg.repo, branch:cfg.branch, path:cfg.path}));
+  sessionStorage.setItem('sched_admin_token', cfg.token);
+}
+function loadConfigFromStorage(){
+  const cfg = JSON.parse(localStorage.getItem('sched_admin_cfg') || '{}');
+  if(cfg.owner) document.getElementById('cfgOwner').value = cfg.owner;
+  if(cfg.repo) document.getElementById('cfgRepo').value = cfg.repo;
+  if(cfg.branch) document.getElementById('cfgBranch').value = cfg.branch;
+  if(cfg.path) document.getElementById('cfgPath').value = cfg.path;
+  const token = sessionStorage.getItem('sched_admin_token');
+  if(token) document.getElementById('cfgToken').value = token;
+}
+
+function setStatus(el, type, msg){
+  el.className = 'status show ' + type;
+  el.textContent = msg;
+}
+
+async function ghGet(){
+  const cfg = getConfig();
+  const url = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${cfg.path}?ref=${cfg.branch}`;
+  const res = await fetch(url, {
+    headers: { Authorization: `token ${cfg.token}`, Accept: 'application/vnd.github+json' }
+  });
+  if(!res.ok){
+    const err = await res.json().catch(()=>({}));
+    throw new Error(err.message || `불러오기 실패 (${res.status})`);
+  }
+  const json = await res.json();
+  const decoded = decodeURIComponent(escape(atob(json.content.replace(/\n/g,''))));
+  return { data: JSON.parse(decoded), sha: json.sha };
+}
+
+async function ghPut(dataObj, sha, message){
+  const cfg = getConfig();
+  const url = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${cfg.path}`;
+  const content = btoa(unescape(encodeURIComponent(JSON.stringify(dataObj, null, 2))));
+  const res = await fetch(url, {
+    method: 'PUT',
+    headers: { Authorization: `token ${cfg.token}`, Accept: 'application/vnd.github+json', 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message, content, sha, branch: cfg.branch })
+  });
+  if(!res.ok){
+    const err = await res.json().catch(()=>({}));
+    throw new Error(err.message || `저장 실패 (${res.status})`);
+  }
+  return res.json();
+}
+
+document.getElementById('btnLoad').addEventListener('click', async () => {
+  const statusEl = document.getElementById('connectStatus');
+  const cfg = getConfig();
+  if(!cfg.owner || !cfg.repo || !cfg.token){
+    setStatus(statusEl, 'err', '계정명, 저장소 이름, 토큰을 모두 입력해주세요.');
+    return;
+  }
+  setStatus(statusEl, 'pending', '불러오는 중…');
+  try{
+    const { data, sha } = await ghGet();
+    DATA = data;
+    SHA = sha;
+    saveConfigToStorage(cfg);
+    setStatus(statusEl, 'ok', '불러오기 완료. 아래에서 편집할 수 있습니다.');
+    document.getElementById('eventsSection').style.display = '';
+    document.getElementById('formSection').style.display = '';
+    document.getElementById('saveSection').style.display = '';
+    renderYearMeta();
+    renderEventTable();
+    resetForm();
+  }catch(err){
+    setStatus(statusEl, 'err', err.message);
+  }
+});
+
+function renderYearMeta(){
+  const box = document.getElementById('yearMetaBox');
+  box.innerHTML = '';
+  Object.keys(DATA.years).forEach(key => {
+    const row = document.createElement('div');
+    row.className = 'year-meta';
+    row.innerHTML = `
+      <div class="yk">${key} — 라벨</div>
+      <input type="text" data-yk="${key}" data-field="label" value="${DATA.years[key].label}">
+      <div class="yk">${key} — 기간 문구</div>
+      <input type="text" data-yk="${key}" data-field="period" value="${DATA.years[key].period}">
+    `;
+    box.appendChild(row);
+  });
+  box.querySelectorAll('input').forEach(inp => {
+    inp.addEventListener('input', () => {
+      DATA.years[inp.dataset.yk][inp.dataset.field] = inp.value;
+    });
+  });
+  const sel = document.getElementById('fYear');
+  sel.innerHTML = Object.keys(DATA.years).map(k => `<option value="${k}">${DATA.years[k].label} (${k})</option>`).join('');
+}
+
+function renderEventTable(){
+  const body = document.getElementById('evtBody');
+  body.innerHTML = '';
+  const sorted = [...DATA.events].sort((a,b)=> a.date.localeCompare(b.date));
+  sorted.forEach(e => {
+    const tr = document.createElement('tr');
+    const c = TYPE_COLORS[e.type] || TYPE_COLORS['기타'];
+    tr.innerHTML = `
+      <td>${(DATA.years[e.year] && DATA.years[e.year].label) || e.year}</td>
+      <td>${e.date}</td>
+      <td>${e.title}</td>
+      <td>${e.project}</td>
+      <td><span class="type-badge" style="background:${c.bg};color:${c.text}">${e.type}</span></td>
+      <td>${e.owner}</td>
+      <td class="row-actions">
+        <button data-id="${e.id}" class="edit">수정</button>
+        <button data-id="${e.id}" class="del">삭제</button>
+      </td>`;
+    body.appendChild(tr);
+  });
+  body.querySelectorAll('.edit').forEach(b => b.addEventListener('click', () => startEdit(b.dataset.id)));
+  body.querySelectorAll('.del').forEach(b => b.addEventListener('click', () => deleteEvent(b.dataset.id)));
+}
+
+function resetForm(){
+  editingId = null;
+  document.getElementById('formTitle').textContent = '4. 새 일정 추가';
+  document.getElementById('fDate').value = '';
+  document.getElementById('fTitle').value = '';
+  document.getElementById('fProject').value = '';
+  document.getElementById('fType').value = '컨설팅';
+  document.getElementById('fOwner').value = '';
+  document.getElementById('btnAddOrUpdate').textContent = '목록에 추가';
+  document.getElementById('btnCancelEdit').style.display = 'none';
+}
+
+function startEdit(id){
+  const e = DATA.events.find(x => x.id === id);
+  if(!e) return;
+  editingId = id;
+  document.getElementById('formTitle').textContent = '4. 일정 수정';
+  document.getElementById('fYear').value = e.year;
+  document.getElementById('fDate').value = e.date;
+  document.getElementById('fTitle').value = e.title;
+  document.getElementById('fProject').value = e.project;
+  document.getElementById('fType').value = e.type;
+  document.getElementById('fOwner').value = e.owner;
+  document.getElementById('btnAddOrUpdate').textContent = '수정 완료';
+  document.getElementById('btnCancelEdit').style.display = '';
+  document.getElementById('formSection').scrollIntoView({behavior:'smooth'});
+}
+
+function deleteEvent(id){
+  if(!confirm('이 일정을 목록에서 삭제할까요? (저장 버튼을 눌러야 실제로 반영됩니다)')) return;
+  DATA.events = DATA.events.filter(e => e.id !== id);
+  renderEventTable();
+}
+
+document.getElementById('btnCancelEdit').addEventListener('click', resetForm);
+
+document.getElementById('btnAddOrUpdate').addEventListener('click', () => {
+  const year = document.getElementById('fYear').value;
+  const date = document.getElementById('fDate').value;
+  const title = document.getElementById('fTitle').value.trim();
+  const project = document.getElementById('fProject').value.trim();
+  const type = document.getElementById('fType').value;
+  const owner = document.getElementById('fOwner').value.trim();
+
+  if(!date || !title){
+    alert('날짜와 일정명은 필수입니다.');
+    return;
+  }
+
+  if(editingId){
+    const idx = DATA.events.findIndex(e => e.id === editingId);
+    if(idx > -1) DATA.events[idx] = { id: editingId, year, date, title, project, type, owner };
+  } else {
+    const id = 'e' + Date.now().toString(36) + Math.random().toString(36).slice(2,6);
+    DATA.events.push({ id, year, date, title, project, type, owner });
+  }
+  renderEventTable();
+  resetForm();
+});
+
+document.getElementById('btnSave').addEventListener('click', async () => {
+  const statusEl = document.getElementById('saveStatus');
+  setStatus(statusEl, 'pending', '저장 중…');
+  try{
+    // 충돌 방지를 위해 저장 직전에 최신 sha를 다시 확인합니다.
+    const fresh = await ghGet();
+    await ghPut(DATA, fresh.sha, `일정 업데이트 (${new Date().toISOString().slice(0,16).replace('T',' ')})`);
+    SHA = fresh.sha;
+    setStatus(statusEl, 'ok', '저장 완료. 잠시 후(약 30초~2분) 공개 페이지에 반영됩니다.');
+  }catch(err){
+    setStatus(statusEl, 'err', err.message + ' — 저장되지 않았습니다. 다시 시도해주세요.');
+  }
+});
+
+loadConfigFromStorage();
+</script>
+</body>
+</html>
