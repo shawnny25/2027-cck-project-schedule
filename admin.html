@@ -135,7 +135,7 @@ table.evt tr:hover td{background:#fff;}
     <h2>3. 등록된 일정</h2>
     <table class="evt">
       <thead>
-        <tr><th>연차</th><th>날짜</th><th>일정명</th><th>사업명</th><th>유형</th><th>담당자</th><th></th></tr>
+        <tr><th>연차</th><th>날짜</th><th>일정명</th><th>유형</th><th>담당자</th><th></th></tr>
       </thead>
       <tbody id="evtBody"></tbody>
     </table>
@@ -155,10 +155,6 @@ table.evt tr:hover td{background:#fff;}
       <div>
         <label for="fTitle">일정명</label>
         <input type="text" id="fTitle" placeholder="예: 사업 조정 컨설팅">
-      </div>
-      <div>
-        <label for="fProject">관련 사업명</label>
-        <input type="text" id="fProject" placeholder="예: OO사업">
       </div>
       <div>
         <label for="fType">유형</label>
@@ -317,7 +313,6 @@ function renderEventTable(){
       <td>${(DATA.years[e.year] && DATA.years[e.year].label) || e.year}</td>
       <td>${e.date}</td>
       <td>${e.title}</td>
-      <td>${e.project}</td>
       <td><span class="type-badge" style="background:${c.bg};color:${c.text}">${e.type}</span></td>
       <td>${e.owner}</td>
       <td class="row-actions">
@@ -335,7 +330,6 @@ function resetForm(){
   document.getElementById('formTitle').textContent = '4. 새 일정 추가';
   document.getElementById('fDate').value = '';
   document.getElementById('fTitle').value = '';
-  document.getElementById('fProject').value = '';
   document.getElementById('fType').value = '컨설팅';
   document.getElementById('fOwner').value = '';
   document.getElementById('btnAddOrUpdate').textContent = '목록에 추가';
@@ -350,7 +344,6 @@ function startEdit(id){
   document.getElementById('fYear').value = e.year;
   document.getElementById('fDate').value = e.date;
   document.getElementById('fTitle').value = e.title;
-  document.getElementById('fProject').value = e.project;
   document.getElementById('fType').value = e.type;
   document.getElementById('fOwner').value = e.owner;
   document.getElementById('btnAddOrUpdate').textContent = '수정 완료';
@@ -370,7 +363,6 @@ document.getElementById('btnAddOrUpdate').addEventListener('click', () => {
   const year = document.getElementById('fYear').value;
   const date = document.getElementById('fDate').value;
   const title = document.getElementById('fTitle').value.trim();
-  const project = document.getElementById('fProject').value.trim();
   const type = document.getElementById('fType').value;
   const owner = document.getElementById('fOwner').value.trim();
 
@@ -381,10 +373,10 @@ document.getElementById('btnAddOrUpdate').addEventListener('click', () => {
 
   if(editingId){
     const idx = DATA.events.findIndex(e => e.id === editingId);
-    if(idx > -1) DATA.events[idx] = { id: editingId, year, date, title, project, type, owner };
+    if(idx > -1) DATA.events[idx] = { id: editingId, year, date, title, type, owner };
   } else {
     const id = 'e' + Date.now().toString(36) + Math.random().toString(36).slice(2,6);
-    DATA.events.push({ id, year, date, title, project, type, owner });
+    DATA.events.push({ id, year, date, title, type, owner });
   }
   renderEventTable();
   resetForm();
