@@ -17,20 +17,22 @@
     {
       "id": "e1",
       "year": "y1",
-      "date": "2024-05-14",
-      "title": "사업 착수 현지 모니터링",
-      "project": "OO사업",
-      "type": "모니터링",
-      "owner": "담당자 미정"
+      "date": "2027-07-12",
+      "endDate": "2027-07-18",
+      "precision": "week",
+      "title": "중간결과보고",
+      "type": "보고시작",
+      "owner": ""
     },
     {
       "id": "e2",
       "year": "y1",
-      "date": "2024-11-20",
-      "title": "1차년도 정산 보고 마감",
-      "project": "OO사업",
-      "type": "보고마감",
-      "owner": "담당자 미정"
+      "date": "2027-04-05",
+      "endDate": "2027-04-11",
+      "precision": "week",
+      "title": "선택컨설팅 신청",
+      "type": "컨설팅",
+      "owner": ""
     },
     {
       "id": "e3",
@@ -62,11 +64,12 @@
     {
       "id": "e6",
       "year": "y1",
-      "date": "2027-12-16",
+      "date": "2027-12-13",
+      "endDate": "2027-12-19",
+      "precision": "week",
       "title": "연말 결과공유회",
-      "project": "국제나눔 파트너십지원사업",
       "type": "기타",
-      "owner": "담당자 미정"
+      "owner": ""
     },
     {
       "id": "e7",
@@ -85,6 +88,96 @@
       "project": "국제나눔 파트너십지원사업",
       "type": "기타",
       "owner": "담당자 미정"
+    },
+    {
+      "id": "emttqrwwj4mgm",
+      "year": "y1",
+      "date": "2027-02-22",
+      "endDate": "2027-02-28",
+      "precision": "week",
+      "title": "안전지침 컨설팅",
+      "type": "컨설팅",
+      "owner": ""
+    },
+    {
+      "id": "emttrrjhr2z6n",
+      "year": "y1",
+      "date": "2027-08-02",
+      "endDate": "2027-08-08",
+      "precision": "week",
+      "title": "국내 현장점검",
+      "type": "모니터링",
+      "owner": ""
+    },
+    {
+      "id": "emttrs3pw7y0h",
+      "year": "y1",
+      "date": "2027-08-30",
+      "endDate": "2027-09-05",
+      "precision": "week",
+      "title": "2차 배분금 지원",
+      "type": "기타",
+      "owner": ""
+    },
+    {
+      "id": "emttrsm9lcefa",
+      "year": "y1",
+      "date": "2027-10-25",
+      "endDate": "2027-10-31",
+      "precision": "week",
+      "title": "성과관리 컨설팅(하)",
+      "type": "컨설팅",
+      "owner": ""
+    },
+    {
+      "id": "emttrt3ueyene",
+      "year": "y1",
+      "date": "2027-03-29",
+      "endDate": "2027-04-04",
+      "precision": "week",
+      "title": "성과관리 컨설팅(상)",
+      "type": "컨설팅",
+      "owner": ""
+    },
+    {
+      "id": "emttrueubmzna",
+      "year": "y1",
+      "date": "2027-11-08",
+      "endDate": "2027-11-14",
+      "precision": "week",
+      "title": "1차 결과보고(1~10월분)",
+      "type": "보고시작",
+      "owner": ""
+    },
+    {
+      "id": "emttrv4vwqxr2",
+      "year": "y1",
+      "date": "2027-11-29",
+      "endDate": "2027-12-05",
+      "precision": "week",
+      "title": "당해년도 사업평가 및 차년도 계획 심사",
+      "type": "모니터링",
+      "owner": ""
+    },
+    {
+      "id": "emttrvvv7eqoi",
+      "year": "y1",
+      "date": "2028-01-10",
+      "endDate": "2028-01-16",
+      "precision": "week",
+      "title": "사업비 반납",
+      "type": "기타",
+      "owner": ""
+    },
+    {
+      "id": "emttrwjmtq41y",
+      "year": "y1",
+      "date": "2028-01-24",
+      "endDate": "2028-01-30",
+      "precision": "week",
+      "title": "2차 결과보고(1~12월분)",
+      "type": "보고시작",
+      "owner": ""
     }
   ]
 }
