@@ -272,9 +272,9 @@ document.getElementById('btnLoad').addEventListener('click', async () => {
     SHA = sha;
     saveConfigToStorage(cfg);
     setStatus(statusEl, 'ok', '불러오기 완료. 아래에서 편집할 수 있습니다.');
-    document.getElementById('eventsSection').style.display = '';
-    document.getElementById('formSection').style.display = '';
-    document.getElementById('saveSection').style.display = '';
+    document.getElementById('eventsSection').style.display = 'block';
+    document.getElementById('formSection').style.display = 'block';
+    document.getElementById('saveSection').style.display = 'block';
     renderYearMeta();
     renderEventTable();
     resetForm();
