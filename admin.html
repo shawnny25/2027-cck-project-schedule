@@ -162,6 +162,10 @@ td.year-group-empty{color:var(--grey);font-size:12px;font-style:italic;}
       <div>
         <label for="fDate">날짜</label>
         <input type="date" id="fDate">
+        <label style="margin-top:6px;display:flex;align-items:center;gap:6px;font-size:12px;color:var(--slate);">
+          <input type="checkbox" id="fRoughWeek" style="width:auto;"> 정확한 날짜 대신 주간으로 표시
+        </label>
+        <input type="week" id="fWeek" style="display:none;margin-top:6px;">
       </div>
       <div>
         <label for="fTitle">일정명</label>
@@ -170,7 +174,7 @@ td.year-group-empty{color:var(--grey);font-size:12px;font-style:italic;}
       <div>
         <label for="fType">유형</label>
         <select id="fType">
-          <option>컨설팅</option><option>모니터링</option><option>보고마감</option><option>기타</option>
+          <option>컨설팅</option><option>모니터링</option><option>보고시작</option><option>보고마감</option><option>기타</option>
         </select>
       </div>
       <div>
@@ -197,6 +201,7 @@ td.year-group-empty{color:var(--grey);font-size:12px;font-style:italic;}
 const TYPE_COLORS = {
   "컨설팅": { bg: "#f3e2c4", text: "#7a5217" },
   "모니터링": { bg: "#d9e9e2", text: "#1c4038" },
+  "보고시작": { bg: "#dbe4ee", text: "#24435f" },
   "보고마감": { bg: "#f1dcd6", text: "#7a2f27" },
   "기타": { bg: "#e4e2da", text: "#454b56" }
 };
@@ -204,6 +209,48 @@ const TYPE_COLORS = {
 let DATA = null;   // { years, events }
 let SHA = null;
 let editingId = null;
+
+// ── 주간(대략적인 날짜) 처리 헬퍼 ──────────────────────────────
+function fmtDate(d){
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+// "2026-W50" -> 그 주의 월요일/일요일 날짜
+function isoWeekToRange(weekStr){
+  const [yearStr, weekPart] = weekStr.split('-W');
+  const year = parseInt(yearStr, 10);
+  const week = parseInt(weekPart, 10);
+  const jan4 = new Date(year, 0, 4);
+  const jan4Day = (jan4.getDay() + 6) % 7; // 월요일=0 기준
+  const week1Monday = new Date(jan4);
+  week1Monday.setDate(jan4.getDate() - jan4Day);
+  const monday = new Date(week1Monday);
+  monday.setDate(week1Monday.getDate() + (week - 1) * 7);
+  const sunday = new Date(monday);
+  sunday.setDate(monday.getDate() + 6);
+  return { start: fmtDate(monday), end: fmtDate(sunday) };
+}
+// 날짜(YYYY-MM-DD, 해당 주의 월요일) -> "YYYY-Www" (수정 화면에서 주간 입력칸에 되돌려 채울 때 사용)
+function dateToIsoWeek(dateStr){
+  const d = new Date(dateStr);
+  const target = new Date(d.valueOf());
+  const dayNr = (d.getDay() + 6) % 7;
+  target.setDate(target.getDate() - dayNr + 3);
+  const firstThursday = new Date(target.getFullYear(), 0, 4);
+  const diff = target - firstThursday;
+  const week = 1 + Math.round(diff / (7*24*60*60*1000));
+  return `${target.getFullYear()}-W${String(week).padStart(2,'0')}`;
+}
+function formatEventRange(e){
+  if(e.precision === 'week' && e.endDate){
+    return `${e.date} ~ ${e.endDate} (주간)`;
+  }
+  return e.date;
+}
+
+document.getElementById('fRoughWeek').addEventListener('change', (ev) => {
+  document.getElementById('fDate').style.display = ev.target.checked ? 'none' : '';
+  document.getElementById('fWeek').style.display = ev.target.checked ? '' : 'none';
+});
 
 function getConfig(){
   return {
@@ -334,7 +381,7 @@ function renderEventTable(){
       const tr = document.createElement('tr');
       const c = TYPE_COLORS[e.type] || TYPE_COLORS['기타'];
       tr.innerHTML = `
-        <td>${e.date}</td>
+        <td>${formatEventRange(e)}</td>
         <td>${e.title}</td>
         <td><span class="type-badge" style="background:${c.bg};color:${c.text}">${e.type}</span></td>
         <td>${e.owner}</td>
@@ -353,6 +400,10 @@ function resetForm(){
   editingId = null;
   document.getElementById('formTitle').textContent = '4. 새 일정 추가';
   document.getElementById('fDate').value = '';
+  document.getElementById('fWeek').value = '';
+  document.getElementById('fRoughWeek').checked = false;
+  document.getElementById('fDate').style.display = '';
+  document.getElementById('fWeek').style.display = 'none';
   document.getElementById('fTitle').value = '';
   document.getElementById('fType').value = '컨설팅';
   document.getElementById('fOwner').value = '';
@@ -366,7 +417,17 @@ function startEdit(id){
   editingId = id;
   document.getElementById('formTitle').textContent = '4. 일정 수정';
   document.getElementById('fYear').value = e.year;
-  document.getElementById('fDate').value = e.date;
+  const isWeek = e.precision === 'week' && e.endDate;
+  document.getElementById('fRoughWeek').checked = isWeek;
+  document.getElementById('fDate').style.display = isWeek ? 'none' : '';
+  document.getElementById('fWeek').style.display = isWeek ? '' : 'none';
+  if(isWeek){
+    document.getElementById('fWeek').value = dateToIsoWeek(e.date);
+    document.getElementById('fDate').value = '';
+  } else {
+    document.getElementById('fDate').value = e.date;
+    document.getElementById('fWeek').value = '';
+  }
   document.getElementById('fTitle').value = e.title;
   document.getElementById('fType').value = e.type;
   document.getElementById('fOwner').value = e.owner;
@@ -385,22 +446,38 @@ document.getElementById('btnCancelEdit').addEventListener('click', resetForm);
 
 document.getElementById('btnAddOrUpdate').addEventListener('click', () => {
   const year = document.getElementById('fYear').value;
-  const date = document.getElementById('fDate').value;
+  const isRough = document.getElementById('fRoughWeek').checked;
   const title = document.getElementById('fTitle').value.trim();
   const type = document.getElementById('fType').value;
   const owner = document.getElementById('fOwner').value.trim();
 
-  if(!date || !title){
-    alert('날짜와 일정명은 필수입니다.');
-    return;
+  let date, endDate, precision;
+  if(isRough){
+    const weekVal = document.getElementById('fWeek').value;
+    if(!weekVal || !title){
+      alert('주간과 일정명은 필수입니다.');
+      return;
+    }
+    const range = isoWeekToRange(weekVal);
+    date = range.start;
+    endDate = range.end;
+    precision = 'week';
+  } else {
+    date = document.getElementById('fDate').value;
+    if(!date || !title){
+      alert('날짜와 일정명은 필수입니다.');
+      return;
+    }
+    endDate = undefined;
+    precision = 'day';
   }
 
   if(editingId){
     const idx = DATA.events.findIndex(e => e.id === editingId);
-    if(idx > -1) DATA.events[idx] = { id: editingId, year, date, title, type, owner };
+    if(idx > -1) DATA.events[idx] = { id: editingId, year, date, endDate, precision, title, type, owner };
   } else {
     const id = 'e' + Date.now().toString(36) + Math.random().toString(36).slice(2,6);
-    DATA.events.push({ id, year, date, title, type, owner });
+    DATA.events.push({ id, year, date, endDate, precision, title, type, owner });
   }
   renderEventTable();
   resetForm();
