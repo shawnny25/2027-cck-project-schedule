@@ -59,6 +59,17 @@ table.evt{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:14px;
 table.evt th{text-align:left;font-size:11px;color:var(--slate);border-bottom:1px solid var(--navy);padding:6px 6px;}
 table.evt td{border-bottom:1px solid var(--paper-line);padding:8px 6px;vertical-align:middle;}
 table.evt tr:hover td{background:#fff;}
+tr.year-group-header td{
+  background:var(--navy);
+  color:#fff;
+  font-family:'Noto Serif KR', serif;
+  font-weight:700;
+  font-size:13px;
+  padding:8px 10px;
+  border-bottom:none;
+}
+tr.year-group-header:hover td{background:var(--navy);}
+td.year-group-empty{color:var(--grey);font-size:12px;font-style:italic;}
 .type-badge{font-size:11px;padding:2px 8px;border-radius:999px;white-space:nowrap;}
 .row-actions{display:flex;gap:6px;}
 .row-actions button{background:none;border:none;font-size:12px;cursor:pointer;color:var(--navy-soft);text-decoration:underline;padding:0;}
@@ -135,7 +146,7 @@ table.evt tr:hover td{background:#fff;}
     <h2>3. 등록된 일정</h2>
     <table class="evt">
       <thead>
-        <tr><th>연차</th><th>날짜</th><th>일정명</th><th>유형</th><th>담당자</th><th></th></tr>
+        <tr><th>날짜</th><th>일정명</th><th>유형</th><th>담당자</th><th></th></tr>
       </thead>
       <tbody id="evtBody"></tbody>
     </table>
@@ -305,21 +316,34 @@ function renderYearMeta(){
 function renderEventTable(){
   const body = document.getElementById('evtBody');
   body.innerHTML = '';
-  const sorted = [...DATA.events].sort((a,b)=> a.date.localeCompare(b.date));
-  sorted.forEach(e => {
-    const tr = document.createElement('tr');
-    const c = TYPE_COLORS[e.type] || TYPE_COLORS['기타'];
-    tr.innerHTML = `
-      <td>${(DATA.years[e.year] && DATA.years[e.year].label) || e.year}</td>
-      <td>${e.date}</td>
-      <td>${e.title}</td>
-      <td><span class="type-badge" style="background:${c.bg};color:${c.text}">${e.type}</span></td>
-      <td>${e.owner}</td>
-      <td class="row-actions">
-        <button data-id="${e.id}" class="edit">수정</button>
-        <button data-id="${e.id}" class="del">삭제</button>
-      </td>`;
-    body.appendChild(tr);
+  Object.keys(DATA.years).forEach(yk => {
+    const groupEvents = DATA.events.filter(e => e.year === yk).sort((a,b)=> a.date.localeCompare(b.date));
+    const headerRow = document.createElement('tr');
+    headerRow.className = 'year-group-header';
+    headerRow.innerHTML = `<td colspan="6">${DATA.years[yk].label}</td>`;
+    body.appendChild(headerRow);
+
+    if(groupEvents.length === 0){
+      const emptyRow = document.createElement('tr');
+      emptyRow.innerHTML = `<td colspan="6" class="year-group-empty">등록된 일정이 없습니다.</td>`;
+      body.appendChild(emptyRow);
+      return;
+    }
+
+    groupEvents.forEach(e => {
+      const tr = document.createElement('tr');
+      const c = TYPE_COLORS[e.type] || TYPE_COLORS['기타'];
+      tr.innerHTML = `
+        <td>${e.date}</td>
+        <td>${e.title}</td>
+        <td><span class="type-badge" style="background:${c.bg};color:${c.text}">${e.type}</span></td>
+        <td>${e.owner}</td>
+        <td class="row-actions">
+          <button data-id="${e.id}" class="edit">수정</button>
+          <button data-id="${e.id}" class="del">삭제</button>
+        </td>`;
+      body.appendChild(tr);
+    });
   });
   body.querySelectorAll('.edit').forEach(b => b.addEventListener('click', () => startEdit(b.dataset.id)));
   body.querySelectorAll('.del').forEach(b => b.addEventListener('click', () => deleteEvent(b.dataset.id)));
