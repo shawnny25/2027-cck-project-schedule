@@ -187,12 +187,18 @@ function eventCoversDate(e, dateStr){
   return e.date === dateStr;
 }
 
+function weekLabel(e){
+  if(!e.roughMonth || !e.weekStart || !e.weekEnd) return '';
+  if(e.weekStart === e.weekEnd) return `${e.roughMonth}월 ${e.weekStart}주차`;
+  return `${e.roughMonth}월 ${e.weekStart}~${e.weekEnd}주차`;
+}
+
 function formatEventRange(e){
-  const wd = ['일','월','화','수','목','금','토'];
-  if(e.precision === 'week' && e.endDate){
-    const s = new Date(e.date), en = new Date(e.endDate);
-    return `${s.getMonth()+1}.${String(s.getDate()).padStart(2,'0')}(${wd[s.getDay()]}) ~ ${en.getMonth()+1}.${String(en.getDate()).padStart(2,'0')}(${wd[en.getDay()]})`;
+  if(e.precision === 'week'){
+    const wl = weekLabel(e);
+    if(wl) return wl;
   }
+  const wd = ['일','월','화','수','목','금','토'];
   const d = new Date(e.date);
   return `${d.getMonth()+1}.${String(d.getDate()).padStart(2,'0')}(${wd[d.getDay()]})`;
 }
@@ -360,10 +366,17 @@ function renderAgenda(){
   }
   items.forEach(e => {
     const c = TYPE_COLORS[e.type];
-    const isWeek = e.precision === 'week' && e.endDate;
-    const dateBlock = isWeek
-      ? `<div class="event-date"><div class="d" style="font-size:13px;">주간</div><div class="m">${formatEventRange(e)}</div></div>`
-      : (() => { const { day, month } = formatEventDate(e.date); return `<div class="event-date"><div class="d">${day}</div><div class="m">${month}</div></div>`; })();
+    const isWeek = e.precision === 'week';
+    let dateBlock;
+    if(isWeek && e.roughMonth && e.weekStart && e.weekEnd){
+      const wtxt = e.weekStart === e.weekEnd ? `${e.weekStart}주` : `${e.weekStart}~${e.weekEnd}주`;
+      dateBlock = `<div class="event-date"><div class="d" style="font-size:17px;">${wtxt}</div><div class="m">${e.roughMonth}월</div></div>`;
+    } else if(isWeek){
+      dateBlock = `<div class="event-date"><div class="d" style="font-size:13px;">주간</div><div class="m">${formatEventRange(e)}</div></div>`;
+    } else {
+      const { day, month } = formatEventDate(e.date);
+      dateBlock = `<div class="event-date"><div class="d">${day}</div><div class="m">${month}</div></div>`;
+    }
     const row = document.createElement('div');
     row.className = 'event-item';
     row.innerHTML = `
@@ -372,7 +385,6 @@ function renderAgenda(){
         <div class="event-title">${e.title}</div>
         <div class="event-meta">
           <span class="type-badge" style="background:${c.bg};color:${c.text}">${e.type}</span>
-          <span>담당 ${e.owner}</span>
         </div>
       </div>`;
     list.appendChild(row);
