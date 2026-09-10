@@ -264,18 +264,20 @@ footer a{color:var(--grey);}
 <script>
 const DATA_URL = './events.json'; // events.json이 같은 폴더에 있어야 합니다.
 
-const TYPE_COLORS = {
+const DEFAULT_TYPE_COLORS = {
   "컨설팅": { dot: "#5f93bd", bg: "#e1ecf3", text: "#2f5f7d" },
   "모니터링": { dot: "#6a9a63", bg: "#e7f0e5", text: "#3f6b3a" },
   "보고시작": { dot: "#8f7fc2", bg: "#ece7f7", text: "#5c4d94" },
   "보고마감": { dot: "#b97a55", bg: "#f5e6e1", text: "#9c5a3f" },
   "기타": { dot: "#6b7480", bg: "#e7e8ea", text: "#454b56" }
 };
-const TYPE_ORDER = ["컨설팅", "모니터링", "보고시작", "보고마감", "기타"];
+const DEFAULT_TYPE_ORDER = ["컨설팅", "모니터링", "보고시작", "보고마감", "기타"];
+let TYPE_COLORS = DEFAULT_TYPE_COLORS;
+let TYPE_ORDER = DEFAULT_TYPE_ORDER;
 
-let DATA = null;          // { years: {...}, events: [...] }
+let DATA = null;          // { years: {...}, events: [...], types: [...] }
 let YEAR_ORDER = [];
-let activeTypes = new Set(TYPE_ORDER);
+let activeTypes = null;
 let activeYear = null;
 
 function todayStr(){
@@ -310,6 +312,18 @@ async function loadData(){
     const res = await fetch(DATA_URL, { cache: 'no-store' });
     if(!res.ok) throw new Error('불러오기 실패');
     DATA = await res.json();
+    if(DATA.types && DATA.types.length){
+      TYPE_COLORS = {};
+      TYPE_ORDER = [];
+      DATA.types.forEach(t => {
+        TYPE_COLORS[t.name] = { dot: t.dot, bg: t.bg, text: t.text };
+        TYPE_ORDER.push(t.name);
+      });
+    } else {
+      TYPE_COLORS = DEFAULT_TYPE_COLORS;
+      TYPE_ORDER = DEFAULT_TYPE_ORDER;
+    }
+    activeTypes = new Set(TYPE_ORDER);
     YEAR_ORDER = Object.keys(DATA.years);
     activeYear = pickDefaultYear();
     document.getElementById('loadingMsg').style.display = 'none';
