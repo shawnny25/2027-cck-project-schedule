@@ -289,9 +289,15 @@ function todayStr(){
 }
 
 function weekLabel(e){
-  if(!e.roughMonth || !e.weekStart || !e.weekEnd) return '';
-  if(e.weekStart === e.weekEnd) return `${e.roughMonth}월 ${e.weekStart}주차`;
-  return `${e.roughMonth}월 ${e.weekStart}~${e.weekEnd}주차`;
+  const sy=e.startYear, sm=e.startMonth, sw=e.startWeek, ey=e.endYear, em=e.endMonth, ew=e.endWeek;
+  if(!sy || !sm || !sw || !ey || !em || !ew) return '';
+  if(sy === ey && sm === em){
+    return sw === ew ? `${sm}월 ${sw}주차` : `${sm}월 ${sw}~${ew}주차`;
+  }
+  if(sy === ey){
+    return `${sm}월 ${sw}주차 ~ ${em}월 ${ew}주차`;
+  }
+  return `${sy}.${sm}월 ${sw}주차 ~ ${ey}.${em}월 ${ew}주차`;
 }
 
 function formatEventRange(e){
