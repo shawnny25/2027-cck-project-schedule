@@ -6,12 +6,7 @@
 <title>일정 관리 · 사업 흐름 계획표</title>
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <style>
-@font-face {
-  font-family: 'Pretendard';
-  src: url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/woff2/PretendardVariable.woff2') format('woff2-variations');
-  font-weight: 45 920;
-}
-@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@700&family=Gowun+Dodum&display=swap');
 
 :root{
   --navy:#333a42; --navy-soft:#4a5560; --slate:#6b7480;
@@ -21,14 +16,14 @@
 }
 *{box-sizing:border-box;}
 html,body{margin:0;padding:0;}
-body{background:var(--paper);color:var(--ink);font-family:'Pretendard',-apple-system,'Malgun Gothic',sans-serif;line-height:1.5;padding-bottom:80px;}
+body{background:var(--paper);color:var(--ink);font-family:'Gowun Dodum',-apple-system,'Malgun Gothic',sans-serif;line-height:1.5;padding-bottom:80px;}
 .wrap{max-width:760px;margin:0 auto;padding:0 24px;}
 header.top{border-bottom:1px solid var(--navy);padding:32px 0 20px;margin-bottom:28px;}
-h1{font-family:'Noto Serif KR',serif;font-weight:700;font-size:24px;margin:0 0 6px;color:var(--navy);}
+h1{font-family:'Gowun Batang',serif;font-weight:700;font-size:24px;margin:0 0 6px;color:var(--navy);}
 .subtitle{color:var(--slate);font-size:13px;margin:0;}
 
 section{margin-bottom:36px;}
-h2{font-family:'Noto Serif KR',serif;font-size:16px;color:var(--navy);border-bottom:1px solid var(--paper-line);padding-bottom:8px;margin-bottom:16px;}
+h2{font-family:'Gowun Batang',serif;font-size:16px;color:var(--navy);border-bottom:1px solid var(--paper-line);padding-bottom:8px;margin-bottom:16px;}
 .hint{font-size:12px;color:var(--grey);margin:-8px 0 14px;line-height:1.6;}
 .hint a{color:var(--navy-soft);}
 
@@ -36,12 +31,12 @@ h2{font-family:'Noto Serif KR',serif;font-size:16px;color:var(--navy);border-bot
 label{display:block;font-size:12px;color:var(--slate);margin-bottom:4px;}
 input[type=text], input[type=password], input[type=date], select{
   width:100%;padding:9px 10px;border:1px solid var(--paper-line);border-radius:3px;
-  font-family:'Pretendard';font-size:14px;background:#fff;color:var(--ink);
+  font-family:'Gowun Dodum';font-size:14px;background:#fff;color:var(--ink);
 }
 input:focus, select:focus{outline:2px solid var(--amber);outline-offset:1px;border-color:var(--amber);}
 
 .btn{
-  font-family:'Pretendard';font-size:14px;font-weight:600;
+  font-family:'Gowun Dodum';font-size:14px;font-weight:600;
   padding:10px 20px;border-radius:3px;border:1px solid var(--navy);
   background:var(--navy);color:#fff;cursor:pointer;
 }
@@ -62,7 +57,7 @@ table.evt tr:hover td{background:#fff;}
 tr.year-group-header td{
   background:var(--navy);
   color:#fff;
-  font-family:'Noto Serif KR', serif;
+  font-family:'Gowun Batang', serif;
   font-weight:700;
   font-size:13px;
   padding:8px 10px;
@@ -143,7 +138,15 @@ td.year-group-empty{color:var(--grey);font-size:12px;font-style:italic;}
     <h2>2. 연차별 기간 문구</h2>
     <div id="yearMetaBox"></div>
 
-    <h2>3. 등록된 일정</h2>
+    <h2>3. 일정 유형 관리</h2>
+    <p class="hint">유형을 추가하면 색상이 자동으로 배정됩니다. 이미 일정에서 쓰이고 있는 유형은 삭제할 수 없어요.</p>
+    <div id="typesBox" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;"></div>
+    <div style="display:flex;gap:8px;margin-bottom:24px;">
+      <input type="text" id="fNewType" placeholder="새 유형 이름 (예: 현장방문)" style="flex:1;">
+      <button class="btn secondary" id="btnAddType" type="button">유형 추가</button>
+    </div>
+
+    <h2>4. 등록된 일정</h2>
     <table class="evt">
       <thead>
         <tr><th>날짜</th><th>일정명</th><th>유형</th><th></th></tr>
@@ -153,7 +156,7 @@ td.year-group-empty{color:var(--grey);font-size:12px;font-style:italic;}
   </section>
 
   <section id="formSection">
-    <h2 id="formTitle">4. 새 일정 추가</h2>
+    <h2 id="formTitle">5. 새 일정 추가</h2>
     <div class="field-grid">
       <div>
         <label for="fYear">연차</label>
@@ -204,13 +207,11 @@ td.year-group-empty{color:var(--grey);font-size:12px;font-style:italic;}
       </div>
       <div>
         <label for="fType">유형</label>
-        <select id="fType">
-          <option>컨설팅</option><option>모니터링</option><option>보고시작</option><option>보고마감</option><option>기타</option>
-        </select>
+        <select id="fType"></select>
       </div>
       <div style="grid-column:1 / -1;">
         <label for="fDesc">설명 (선택 — 조회 페이지에서 일정 클릭 시 팝업으로 표시됩니다)</label>
-        <textarea id="fDesc" rows="3" placeholder="예: 사업 수행 국가의 비상 상황에 대비해 임직원과 사업의 안전을 지키는 실전 가이드라인을 수립합니다…" style="width:100%;padding:9px 10px;border:1px solid var(--paper-line);border-radius:3px;font-family:'Pretendard';font-size:14px;background:#fff;color:var(--ink);resize:vertical;"></textarea>
+        <textarea id="fDesc" rows="3" placeholder="예: 사업 수행 국가의 비상 상황에 대비해 임직원과 사업의 안전을 지키는 실전 가이드라인을 수립합니다…" style="width:100%;padding:9px 10px;border:1px solid var(--paper-line);border-radius:3px;font-family:'Gowun Dodum';font-size:14px;background:#fff;color:var(--ink);resize:vertical;"></textarea>
       </div>
     </div>
     <div class="form-actions">
@@ -220,7 +221,7 @@ td.year-group-empty{color:var(--grey);font-size:12px;font-style:italic;}
   </section>
 
   <section id="saveSection" style="display:none;">
-    <h2>5. GitHub에 저장</h2>
+    <h2>6. GitHub에 저장</h2>
     <p class="hint">저장 버튼을 누르면 events.json이 즉시 커밋됩니다. GitHub Pages가 다시 빌드되기까지 약 30초~2분 정도 걸릴 수 있습니다.</p>
     <button class="btn" id="btnSave">GitHub에 저장</button>
     <div class="status" id="saveStatus"></div>
@@ -229,15 +230,32 @@ td.year-group-empty{color:var(--grey);font-size:12px;font-style:italic;}
 </main>
 
 <script>
-const TYPE_COLORS = {
-  "컨설팅": { bg: "#e1ecf3", text: "#2f5f7d" },
-  "모니터링": { bg: "#e7f0e5", text: "#3f6b3a" },
-  "보고시작": { bg: "#ece7f7", text: "#5c4d94" },
-  "보고마감": { bg: "#f5e6e1", text: "#9c5a3f" },
-  "기타": { bg: "#e7e8ea", text: "#454b56" }
-};
+const DEFAULT_TYPES = [
+  { name: "컨설팅", dot: "#5f93bd", bg: "#e1ecf3", text: "#2f5f7d" },
+  { name: "모니터링", dot: "#6a9a63", bg: "#e7f0e5", text: "#3f6b3a" },
+  { name: "보고시작", dot: "#8f7fc2", bg: "#ece7f7", text: "#5c4d94" },
+  { name: "보고마감", dot: "#b97a55", bg: "#f5e6e1", text: "#9c5a3f" },
+  { name: "기타", dot: "#6b7480", bg: "#e7e8ea", text: "#454b56" }
+];
+// 새 유형을 추가할 때 순서대로 돌려가며 배정하는 색상 팔레트
+const TYPE_PALETTE = [
+  { dot: "#5f93bd", bg: "#e1ecf3", text: "#2f5f7d" },
+  { dot: "#6a9a63", bg: "#e7f0e5", text: "#3f6b3a" },
+  { dot: "#8f7fc2", bg: "#ece7f7", text: "#5c4d94" },
+  { dot: "#b97a55", bg: "#f5e6e1", text: "#9c5a3f" },
+  { dot: "#6b7480", bg: "#e7e8ea", text: "#454b56" },
+  { dot: "#c2678f", bg: "#f5e1ea", text: "#8a3a5c" },
+  { dot: "#4a9e9e", bg: "#dcf0f0", text: "#2a6363" },
+  { dot: "#b8a13f", bg: "#f4eecb", text: "#7a6620" }
+];
+let TYPE_COLORS = {}; // 렌더링용 lookup — DATA.types에서 매번 다시 만들어짐
 
-let DATA = null;   // { years, events }
+function rebuildTypeColors(){
+  TYPE_COLORS = {};
+  (DATA.types || []).forEach(t => { TYPE_COLORS[t.name] = { bg: t.bg, text: t.text }; });
+}
+
+let DATA = null;   // { years, events, types }
 let SHA = null;
 let editingId = null;
 
@@ -375,6 +393,10 @@ document.getElementById('btnLoad').addEventListener('click', async () => {
   try{
     const { data, sha } = await ghGet();
     DATA = data;
+    if(!DATA.types || !DATA.types.length){
+      DATA.types = DEFAULT_TYPES.map(t => ({ ...t }));
+    }
+    rebuildTypeColors();
     SHA = sha;
     saveConfigToStorage(cfg);
     setStatus(statusEl, 'ok', '불러오기 완료. 아래에서 편집할 수 있습니다.');
@@ -382,6 +404,7 @@ document.getElementById('btnLoad').addEventListener('click', async () => {
     document.getElementById('formSection').style.display = 'block';
     document.getElementById('saveSection').style.display = 'block';
     renderYearMeta();
+    renderTypes();
     renderEventTable();
     resetForm();
   }catch(err){
@@ -411,6 +434,70 @@ function renderYearMeta(){
   const sel = document.getElementById('fYear');
   sel.innerHTML = Object.keys(DATA.years).map(k => `<option value="${k}">${DATA.years[k].label} (${k})</option>`).join('');
 }
+
+function renderTypeSelect(){
+  const sel = document.getElementById('fType');
+  const prev = sel.value;
+  sel.innerHTML = DATA.types.map(t => `<option value="${t.name}">${t.name}</option>`).join('');
+  if(DATA.types.some(t => t.name === prev)) sel.value = prev;
+}
+
+function renderTypes(){
+  const box = document.getElementById('typesBox');
+  box.innerHTML = '';
+  DATA.types.forEach(t => {
+    const chip = document.createElement('span');
+    chip.style.cssText = `display:inline-flex;align-items:center;gap:6px;background:${t.bg};color:${t.text};font-size:12px;padding:5px 6px 5px 12px;border-radius:999px;`;
+    chip.innerHTML = `${t.name} <button type="button" data-name="${t.name}" style="background:none;border:none;color:inherit;cursor:pointer;font-size:14px;line-height:1;padding:2px 4px;" aria-label="${t.name} 삭제">×</button>`;
+    box.appendChild(chip);
+  });
+  box.querySelectorAll('button').forEach(btn => {
+    btn.addEventListener('click', () => deleteType(btn.dataset.name));
+  });
+  renderTypeSelect();
+}
+
+function addType(name){
+  name = name.trim();
+  if(!name){ return; }
+  if(DATA.types.some(t => t.name === name)){
+    alert('이미 있는 유형 이름입니다.');
+    return;
+  }
+  const color = TYPE_PALETTE[DATA.types.length % TYPE_PALETTE.length];
+  DATA.types.push({ name, ...color });
+  rebuildTypeColors();
+  renderTypes();
+  renderEventTable();
+}
+
+function deleteType(name){
+  const inUse = DATA.events.some(e => e.type === name);
+  if(inUse){
+    alert(`"${name}" 유형을 쓰고 있는 일정이 있어 삭제할 수 없습니다. 먼저 해당 일정들의 유형을 바꿔주세요.`);
+    return;
+  }
+  if(DATA.types.length <= 1){
+    alert('유형은 최소 1개 이상 있어야 합니다.');
+    return;
+  }
+  if(!confirm(`"${name}" 유형을 삭제할까요?`)) return;
+  DATA.types = DATA.types.filter(t => t.name !== name);
+  rebuildTypeColors();
+  renderTypes();
+}
+
+document.getElementById('btnAddType').addEventListener('click', () => {
+  const input = document.getElementById('fNewType');
+  addType(input.value);
+  input.value = '';
+});
+document.getElementById('fNewType').addEventListener('keydown', (ev) => {
+  if(ev.key === 'Enter'){
+    ev.preventDefault();
+    document.getElementById('btnAddType').click();
+  }
+});
 
 function renderEventTable(){
   const body = document.getElementById('evtBody');
@@ -455,7 +542,7 @@ function resetForm(){
   document.getElementById('fDate').style.display = '';
   document.getElementById('fWeekBox').style.display = 'none';
   document.getElementById('fTitle').value = '';
-  document.getElementById('fType').value = '컨설팅';
+  document.getElementById('fType').value = DATA && DATA.types && DATA.types[0] ? DATA.types[0].name : '';
   document.getElementById('fDesc').value = '';
   document.getElementById('btnAddOrUpdate').textContent = '목록에 추가';
   document.getElementById('btnCancelEdit').style.display = 'none';
