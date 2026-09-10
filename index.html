@@ -61,7 +61,7 @@ h1{font-family:'Noto Serif KR', serif;font-weight:700;font-size:28px;margin:0 0 
 .state-msg, .tl-empty{color:var(--grey);font-size:14px;padding:28px 0;text-align:center;}
 
 /* 상/하반기 2단 레이아웃 */
-.timeline-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 40px;}
+.timeline-grid{display:grid;grid-template-columns:1fr 1fr;gap:34px 40px;}
 .timeline-col{min-width:0;}
 .half-label{
   font-family:'Noto Serif KR', serif;
@@ -181,12 +181,20 @@ footer a{color:var(--grey);}
     <div class="filters" id="filters" role="group" aria-label="일정 유형 필터"></div>
     <div class="timeline-grid">
       <div class="timeline-col">
-        <div class="half-label">상반기 (1~6월)</div>
-        <div class="timeline" id="timelineH1"></div>
+        <div class="half-label" id="qLabel0"></div>
+        <div class="timeline" id="timelineQ1"></div>
       </div>
       <div class="timeline-col">
-        <div class="half-label">하반기 (7~12월)</div>
-        <div class="timeline" id="timelineH2"></div>
+        <div class="half-label" id="qLabel1"></div>
+        <div class="timeline" id="timelineQ2"></div>
+      </div>
+      <div class="timeline-col">
+        <div class="half-label" id="qLabel2"></div>
+        <div class="timeline" id="timelineQ3"></div>
+      </div>
+      <div class="timeline-col">
+        <div class="half-label" id="qLabel3"></div>
+        <div class="timeline" id="timelineQ4"></div>
       </div>
     </div>
   </div>
@@ -357,13 +365,54 @@ function renderHalf(container, items, allowTrailingToday){
   }
 }
 
+// 연차의 시작월을 "기간" 문구(예: "2027.02 – 2028.01")에서 읽어옵니다. 못 읽으면 첫 일정의 월로 대체합니다.
+function parsePeriodStart(periodStr){
+  if(!periodStr) return null;
+  const m = periodStr.match(/(\d{4})\.(\d{1,2})/);
+  if(!m) return null;
+  return new Date(parseInt(m[1],10), parseInt(m[2],10)-1, 1);
+}
+function getRefStart(items){
+  const parsed = parsePeriodStart(DATA.years[activeYear].period);
+  if(parsed) return parsed;
+  if(items.length){
+    const d = new Date(items[0].date);
+    return new Date(d.getFullYear(), d.getMonth(), 1);
+  }
+  return new Date(new Date().getFullYear(), 0, 1);
+}
+function quarterLabel(refStart, i){
+  const s = new Date(refStart.getFullYear(), refStart.getMonth()+i*3, 1);
+  const e = new Date(refStart.getFullYear(), refStart.getMonth()+i*3+2, 1);
+  const pad = n => String(n).padStart(2,'0');
+  if(s.getFullYear() === e.getFullYear()){
+    return `${i+1}분기 (${s.getFullYear()}.${pad(s.getMonth()+1)}~${pad(e.getMonth()+1)})`;
+  }
+  return `${i+1}분기 (${s.getFullYear()}.${pad(s.getMonth()+1)}~${e.getFullYear()}.${pad(e.getMonth()+1)})`;
+}
+
 function renderTimeline(){
   const items = currentEvents().filter(e => activeTypes.has(e.type)).sort((a,b)=>a.date.localeCompare(b.date));
-  const first = items.filter(e => new Date(e.date).getMonth()+1 <= 6);
-  const second = items.filter(e => new Date(e.date).getMonth()+1 >= 7);
-  const todayMonth = new Date().getMonth()+1;
-  renderHalf(document.getElementById('timelineH1'), first, todayMonth <= 6);
-  renderHalf(document.getElementById('timelineH2'), second, todayMonth >= 7);
+  const refStart = getRefStart(items);
+
+  // refStart를 기준으로 3개월씩 4개 분기 구간을 나눕니다(달력상의 1~3월이 아니라, 이 연차의 시작월 기준입니다).
+  const boundsEnd = [1,2,3,4].map(i => new Date(refStart.getFullYear(), refStart.getMonth()+i*3, 1));
+  const buckets = [[],[],[],[]];
+  items.forEach(e => {
+    const d = new Date(e.date);
+    let idx = 3;
+    for(let i=0;i<4;i++){ if(d < boundsEnd[i]){ idx = i; break; } }
+    buckets[idx].push(e);
+  });
+
+  const today = new Date();
+  let todayIdx = 3;
+  for(let i=0;i<4;i++){ if(today < boundsEnd[i]){ todayIdx = i; break; } }
+
+  for(let i=0;i<4;i++){
+    document.getElementById('qLabel'+i).textContent = quarterLabel(refStart, i);
+    renderHalf(document.getElementById('timelineQ'+(i+1)), buckets[i], todayIdx === i);
+  }
 }
 
 function renderAll(){
