@@ -151,6 +151,52 @@ h1{font-family:'Noto Serif KR', serif;font-weight:700;font-size:28px;margin:0 0 
 footer{max-width:1180px;margin:40px auto 0;padding:20px 24px 0;border-top:1px solid var(--paper-line);font-size:12px;color:var(--grey);display:flex;justify-content:space-between;}
 footer a{color:var(--grey);}
 
+/* 일정 설명 팝업 */
+.modal-overlay{
+  display:none;
+  position:fixed;inset:0;
+  background:rgba(23,35,61,0.45);
+  align-items:center;justify-content:center;
+  padding:20px;
+  z-index:100;
+}
+.modal-overlay.show{display:flex;}
+.modal-box{
+  background:#fff;
+  border-radius:6px;
+  max-width:480px;
+  width:100%;
+  max-height:80vh;
+  overflow-y:auto;
+  padding:28px 26px;
+  position:relative;
+  box-shadow:0 12px 40px rgba(0,0,0,0.2);
+}
+.modal-close{
+  position:absolute;
+  top:14px;right:14px;
+  background:none;border:none;
+  font-size:22px;
+  line-height:1;
+  color:var(--slate);
+  cursor:pointer;
+  width:28px;height:28px;
+}
+.modal-close:hover{color:var(--navy);}
+.modal-title{
+  font-family:'Noto Serif KR', serif;
+  font-weight:700;
+  font-size:19px;
+  color:var(--navy);
+  margin-bottom:4px;
+}
+.modal-date{font-size:13px;color:var(--slate);margin-bottom:16px;}
+.modal-desc{font-size:14px;color:var(--ink);line-height:1.75;white-space:pre-line;}
+
+.tl-card.clickable{cursor:pointer;}
+.tl-card.clickable:hover{border-color:var(--navy-soft);box-shadow:0 2px 8px rgba(23,35,61,0.08);}
+.tl-hint{font-size:11px;color:var(--navy-soft);margin-top:8px;text-decoration:underline;}
+
 @media (max-width:600px){
   h1{font-size:22px;}
   .year-tab{padding:10px 12px;font-size:14px;}
@@ -209,6 +255,16 @@ footer a{color:var(--grey);}
     <a href="./admin.html">운영진 전용</a>
   </div>
 </footer>
+
+<div id="modalOverlay" class="modal-overlay">
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <button type="button" id="modalClose" class="modal-close" aria-label="닫기">×</button>
+    <span class="type-badge" id="modalType" style="margin-bottom:10px;"></span>
+    <div class="modal-title" id="modalTitle"></div>
+    <div class="modal-date" id="modalDate"></div>
+    <div class="modal-desc" id="modalDesc"></div>
+  </div>
+</div>
 
 <script>
 const DATA_URL = './events.json'; // events.json이 같은 폴더에 있어야 합니다.
@@ -351,15 +407,20 @@ function renderHalf(container, items, allowTrailingToday){
     }
 
     const c = TYPE_COLORS[e.type];
+    const hasDesc = !!(e.description && e.description.trim());
     const item = document.createElement('div');
     item.className = 'tl-item';
     item.style.setProperty('--dot', c.dot);
     item.innerHTML = `
-      <div class="tl-card">
+      <div class="tl-card${hasDesc ? ' clickable' : ''}">
         <div class="tl-date">${formatEventRange(e)}</div>
         <div class="tl-title">${e.title}</div>
         <span class="type-badge" style="background:${c.bg};color:${c.text}">${e.type}</span>
+        ${hasDesc ? '<div class="tl-hint">자세히 보기 ›</div>' : ''}
       </div>`;
+    if(hasDesc){
+      item.querySelector('.tl-card').addEventListener('click', () => openModal(e));
+    }
     container.appendChild(item);
   });
 
@@ -423,6 +484,28 @@ function renderAll(){
   renderFilters();
   renderTimeline();
 }
+
+function openModal(e){
+  const c = TYPE_COLORS[e.type];
+  const typeEl = document.getElementById('modalType');
+  typeEl.textContent = e.type;
+  typeEl.style.background = c.bg;
+  typeEl.style.color = c.text;
+  document.getElementById('modalTitle').textContent = e.title;
+  document.getElementById('modalDate').textContent = formatEventRange(e);
+  document.getElementById('modalDesc').textContent = e.description;
+  document.getElementById('modalOverlay').classList.add('show');
+}
+function closeModal(){
+  document.getElementById('modalOverlay').classList.remove('show');
+}
+document.getElementById('modalClose').addEventListener('click', closeModal);
+document.getElementById('modalOverlay').addEventListener('click', (ev) => {
+  if(ev.target.id === 'modalOverlay') closeModal();
+});
+document.addEventListener('keydown', (ev) => {
+  if(ev.key === 'Escape') closeModal();
+});
 
 loadData();
 </script>
