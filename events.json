@@ -93,15 +93,17 @@
       "id": "emttqrwwj4mgm",
       "year": "y1",
       "date": "2025-01-01",
-      "endDate": "2025-01-07",
+      "endDate": "2025-02-07",
       "precision": "week",
       "title": "안전지침 컨설팅",
       "type": "컨설팅",
       "description": "사업 수행 국가의 비상 상황에 대비해 임직원과 사업의 안전을 지키는 실전 가이드라인을 수립합니다.\n해외 안전 전문가와의 컨설팅을 통해 국가별 위험 요소를 점검하고, 비상 대피 경로 확보, 연락망 구축, 상황별 행동 요령 등 현지에서 즉시 적용 가능한 대피 및 안전지침을 수립합니다.",
-      "roughYear": 2025,
-      "roughMonth": 1,
-      "weekStart": 1,
-      "weekEnd": 1
+      "startYear": 2025,
+      "startMonth": 1,
+      "startWeek": 1,
+      "endYear": 2025,
+      "endMonth": 2,
+      "endWeek": 1
     },
     {
       "id": "emttrrjhr2z6n",
