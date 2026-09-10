@@ -194,6 +194,10 @@ td.year-group-empty{color:var(--grey);font-size:12px;font-style:italic;}
           <option>컨설팅</option><option>모니터링</option><option>보고시작</option><option>보고마감</option><option>기타</option>
         </select>
       </div>
+      <div style="grid-column:1 / -1;">
+        <label for="fDesc">설명 (선택 — 조회 페이지에서 일정 클릭 시 팝업으로 표시됩니다)</label>
+        <textarea id="fDesc" rows="3" placeholder="예: 사업 수행 국가의 비상 상황에 대비해 임직원과 사업의 안전을 지키는 실전 가이드라인을 수립합니다…" style="width:100%;padding:9px 10px;border:1px solid var(--paper-line);border-radius:3px;font-family:'Pretendard';font-size:14px;background:#fff;color:var(--ink);resize:vertical;"></textarea>
+      </div>
     </div>
     <div class="form-actions">
       <button class="btn secondary" id="btnAddOrUpdate">목록에 추가</button>
@@ -409,7 +413,7 @@ function renderEventTable(){
       const c = TYPE_COLORS[e.type] || TYPE_COLORS['기타'];
       tr.innerHTML = `
         <td>${formatEventRange(e)}</td>
-        <td>${e.title}</td>
+        <td>${e.title}${e.description ? ' <span style="color:var(--slate);font-size:11px;" title="설명 있음">ⓘ</span>' : ''}</td>
         <td><span class="type-badge" style="background:${c.bg};color:${c.text}">${e.type}</span></td>
         <td class="row-actions">
           <button data-id="${e.id}" class="edit">수정</button>
@@ -431,6 +435,7 @@ function resetForm(){
   document.getElementById('fWeekBox').style.display = 'none';
   document.getElementById('fTitle').value = '';
   document.getElementById('fType').value = '컨설팅';
+  document.getElementById('fDesc').value = '';
   document.getElementById('btnAddOrUpdate').textContent = '목록에 추가';
   document.getElementById('btnCancelEdit').style.display = 'none';
 }
@@ -458,6 +463,7 @@ function startEdit(id){
   }
   document.getElementById('fTitle').value = e.title;
   document.getElementById('fType').value = e.type;
+  document.getElementById('fDesc').value = e.description || '';
   document.getElementById('btnAddOrUpdate').textContent = '수정 완료';
   document.getElementById('btnCancelEdit').style.display = '';
   document.getElementById('formSection').scrollIntoView({behavior:'smooth'});
@@ -476,6 +482,7 @@ document.getElementById('btnAddOrUpdate').addEventListener('click', () => {
   const isRough = document.getElementById('fRoughWeek').checked;
   const title = document.getElementById('fTitle').value.trim();
   const type = document.getElementById('fType').value;
+  const description = document.getElementById('fDesc').value.trim();
 
   let date, endDate, precision, roughYear, roughMonth, weekStart, weekEnd;
   if(isRough){
@@ -505,7 +512,7 @@ document.getElementById('btnAddOrUpdate').addEventListener('click', () => {
     precision = 'day';
   }
 
-  const base = { year, date, endDate, precision, title, type };
+  const base = { year, date, endDate, precision, title, type, description: description || undefined };
   if(precision === 'week') Object.assign(base, { roughYear, roughMonth, weekStart, weekEnd });
 
   if(editingId){
