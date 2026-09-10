@@ -6,12 +6,7 @@
 <title>사업 흐름 계획표 · KCOC</title>
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <style>
-@font-face {
-  font-family: 'Pretendard';
-  src: url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/woff2/PretendardVariable.woff2') format('woff2-variations');
-  font-weight: 45 920;
-}
-@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@700&family=Gowun+Dodum&display=swap');
 
 :root{
   --navy: #333a42;
@@ -32,7 +27,7 @@ html,body{margin:0;padding:0;}
 body{
   background:var(--paper);
   color:var(--ink);
-  font-family:'Pretendard', -apple-system, 'Malgun Gothic', sans-serif;
+  font-family:'Gowun Dodum', -apple-system, 'Malgun Gothic', sans-serif;
   line-height:1.5;
   padding-bottom:80px;
 }
@@ -40,12 +35,12 @@ body{
 
 header.top{border-bottom:1px solid var(--navy);padding:40px 0 0;}
 header.top .top-row{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px;padding-bottom:22px;}
-h1{font-family:'Noto Serif KR', serif;font-weight:700;font-size:28px;margin:0 0 6px;color:var(--navy);letter-spacing:-0.01em;}
+h1{font-family:'Gowun Batang', serif;font-weight:700;font-size:28px;margin:0 0 6px;color:var(--navy);letter-spacing:-0.01em;}
 .subtitle{color:var(--slate);font-size:14px;margin:0;}
 .org-tag{font-size:13px;color:var(--navy-soft);border:1px solid var(--navy-soft);padding:5px 12px;border-radius:2px;white-space:nowrap;}
 
 .year-tabs{display:flex;gap:2px;}
-.year-tab{background:none;border:none;border-bottom:3px solid transparent;color:var(--slate);font-family:'Pretendard';font-size:15px;font-weight:600;padding:12px 18px;cursor:pointer;margin-bottom:-1px;}
+.year-tab{background:none;border:none;border-bottom:3px solid transparent;color:var(--slate);font-family:'Gowun Dodum';font-size:15px;font-weight:600;padding:12px 18px;cursor:pointer;margin-bottom:-1px;}
 .year-tab[aria-selected="true"]{color:var(--navy);border-bottom-color:var(--amber);}
 .year-tab:hover{color:var(--navy);}
 .year-tab:focus-visible{outline:2px solid var(--amber);outline-offset:-2px;}
@@ -64,7 +59,7 @@ h1{font-family:'Noto Serif KR', serif;font-weight:700;font-size:28px;margin:0 0 
 .timeline-grid{display:grid;grid-template-columns:repeat(4, 1fr);gap:0 26px;}
 .timeline-col{min-width:0;}
 .half-label{
-  font-family:'Noto Serif KR', serif;
+  font-family:'Gowun Batang', serif;
   font-weight:700;
   font-size:14px;
   color:var(--navy-soft);
@@ -86,7 +81,7 @@ h1{font-family:'Noto Serif KR', serif;font-weight:700;font-size:28px;margin:0 0 
 
 .tl-month{
   position:relative;
-  font-family:'Noto Serif KR', serif;
+  font-family:'Gowun Batang', serif;
   font-weight:700;
   font-size:17px;
   color:var(--navy);
@@ -184,7 +179,7 @@ footer a{color:var(--grey);}
 }
 .modal-close:hover{color:var(--navy);}
 .modal-title{
-  font-family:'Noto Serif KR', serif;
+  font-family:'Gowun Batang', serif;
   font-weight:700;
   font-size:19px;
   color:var(--navy);
@@ -355,7 +350,7 @@ function renderYearTabs(){
     });
     el.appendChild(btn);
   });
-  document.getElementById('yearPeriod').textContent = DATA.years[activeYear].period;
+  document.getElementById('yearPeriod').textContent = `당해년도 사업기간: ${DATA.years[activeYear].period}`;
 }
 
 function renderFilters(){
