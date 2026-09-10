@@ -54,7 +54,7 @@
       "date": "2025-11-25",
       "precision": "day",
       "title": "2차년도 정산 보고 마감",
-      "type": "기타"
+      "type": "배분금"
     },
     {
       "id": "e5",
@@ -81,7 +81,7 @@
       "date": "2027-02-18",
       "precision": "day",
       "title": "3차년도(최종) 정산 보고 마감",
-      "type": "기타"
+      "type": "배분금"
     },
     {
       "id": "emttpakbg2uh7",
@@ -155,7 +155,7 @@
       "endDate": "2025-01-07",
       "precision": "week",
       "title": "1차 결과보고(1~10월분)",
-      "type": "기타",
+      "type": "배분금",
       "startYear": 2025,
       "startMonth": 1,
       "startWeek": 1,
@@ -311,16 +311,10 @@
       "text": "#2a6363"
     },
     {
-      "name": "보고",
+      "name": "활동 보고",
       "dot": "#c2678f",
       "bg": "#f5e1ea",
       "text": "#8a3a5c"
-    },
-    {
-      "name": "잔액반납",
-      "dot": "#4a9e9e",
-      "bg": "#dcf0f0",
-      "text": "#2a6363"
     }
   ]
 }
