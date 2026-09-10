@@ -277,6 +277,22 @@
       "endYear": 2027,
       "endMonth": 6,
       "endWeek": 5
+    },
+    {
+      "id": "emtv7mkwet6pa",
+      "year": "y2",
+      "date": "2027-01-01",
+      "endDate": "2027-01-14",
+      "precision": "week",
+      "title": "조정 컨설팅",
+      "type": "모니터링",
+      "description": "ㅇ홍ㅎ러",
+      "startYear": 2027,
+      "startMonth": 1,
+      "startWeek": 1,
+      "endYear": 2027,
+      "endMonth": 1,
+      "endWeek": 2
     }
   ],
   "types": [
