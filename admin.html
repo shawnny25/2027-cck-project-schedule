@@ -165,22 +165,36 @@ td.year-group-empty{color:var(--grey);font-size:12px;font-style:italic;}
         <label style="margin-top:6px;display:flex;align-items:center;gap:6px;font-size:12px;color:var(--slate);">
           <input type="checkbox" id="fRoughWeek" style="width:auto;"> 정확한 날짜 대신 '몇 월 몇 주차'로 대략 표시
         </label>
-        <div id="fWeekBox" style="display:none;margin-top:8px;grid-template-columns:repeat(4,1fr);gap:8px;">
-          <div>
-            <label for="fRYear" style="font-size:11px;">연도</label>
-            <select id="fRYear"></select>
+        <div id="fWeekBox" style="display:none;margin-top:8px;">
+          <div style="font-size:11px;color:var(--slate);margin-bottom:4px;font-weight:600;">시작 시점</div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px;">
+            <div>
+              <label for="fRStartYear" style="font-size:11px;">연도</label>
+              <select id="fRStartYear"></select>
+            </div>
+            <div>
+              <label for="fRStartMonth" style="font-size:11px;">월</label>
+              <select id="fRStartMonth"></select>
+            </div>
+            <div>
+              <label for="fRStartWeek" style="font-size:11px;">주차</label>
+              <select id="fRStartWeek"></select>
+            </div>
           </div>
-          <div>
-            <label for="fRMonth" style="font-size:11px;">월</label>
-            <select id="fRMonth"></select>
-          </div>
-          <div>
-            <label for="fRWeekStart" style="font-size:11px;">시작 주차</label>
-            <select id="fRWeekStart"></select>
-          </div>
-          <div>
-            <label for="fRWeekEnd" style="font-size:11px;">종료 주차</label>
-            <select id="fRWeekEnd"></select>
+          <div style="font-size:11px;color:var(--slate);margin-bottom:4px;font-weight:600;">종료 시점</div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
+            <div>
+              <label for="fREndYear" style="font-size:11px;">연도</label>
+              <select id="fREndYear"></select>
+            </div>
+            <div>
+              <label for="fREndMonth" style="font-size:11px;">월</label>
+              <select id="fREndMonth"></select>
+            </div>
+            <div>
+              <label for="fREndWeek" style="font-size:11px;">주차</label>
+              <select id="fREndWeek"></select>
+            </div>
           </div>
         </div>
       </div>
@@ -235,24 +249,27 @@ function fmtDate(d){
 function daysInMonth(year, month){ // month: 1~12
   return new Date(year, month, 0).getDate();
 }
-// year, month(1~12), weekStart~weekEnd(1~5) -> 실제 날짜 구간 (캘린더 표시용)
-function monthWeekRangeToDates(year, month, weekStart, weekEnd){
+// year, month(1~12), week(1~5) -> 그 주차의 시작일/종료일 (isEnd로 구분)
+function weekPointToDate(year, month, week, isEnd){
   const dim = daysInMonth(year, month);
-  const startDay = Math.min((weekStart - 1) * 7 + 1, dim);
-  const endDay = Math.min(weekEnd * 7, dim);
-  const start = new Date(year, month - 1, startDay);
-  const end = new Date(year, month - 1, endDay);
-  return { start: fmtDate(start), end: fmtDate(end) };
+  const day = isEnd ? Math.min(week * 7, dim) : Math.min((week - 1) * 7 + 1, dim);
+  return new Date(year, month - 1, day);
 }
 function weekLabel(e){
-  if(e.weekStart === e.weekEnd) return `${e.roughMonth}월 ${e.weekStart}주차`;
-  return `${e.roughMonth}월 ${e.weekStart}~${e.weekEnd}주차`;
+  const sy=e.startYear, sm=e.startMonth, sw=e.startWeek, ey=e.endYear, em=e.endMonth, ew=e.endWeek;
+  if(!sy || !sm || !sw || !ey || !em || !ew) return '';
+  if(sy === ey && sm === em){
+    return sw === ew ? `${sm}월 ${sw}주차` : `${sm}월 ${sw}~${ew}주차`;
+  }
+  if(sy === ey){
+    return `${sm}월 ${sw}주차 ~ ${em}월 ${ew}주차`;
+  }
+  return `${sy}.${sm}월 ${sw}주차 ~ ${ey}.${em}월 ${ew}주차`;
 }
-function populateRoughSelects(){
-  const yearSel = document.getElementById('fRYear');
-  const monthSel = document.getElementById('fRMonth');
-  const startSel = document.getElementById('fRWeekStart');
-  const endSel = document.getElementById('fRWeekEnd');
+function fillYearMonthWeekSelects(yearId, monthId, weekId){
+  const yearSel = document.getElementById(yearId);
+  const monthSel = document.getElementById(monthId);
+  const weekSel = document.getElementById(weekId);
   const thisYear = new Date().getFullYear();
   yearSel.innerHTML = '';
   for(let y = thisYear - 1; y <= thisYear + 5; y++){
@@ -266,12 +283,16 @@ function populateRoughSelects(){
   for(let w = 1; w <= 5; w++){
     weekOpts += `<option value="${w}">${w}주차</option>`;
   }
-  startSel.innerHTML = weekOpts;
-  endSel.innerHTML = weekOpts;
+  weekSel.innerHTML = weekOpts;
+}
+function populateRoughSelects(){
+  fillYearMonthWeekSelects('fRStartYear', 'fRStartMonth', 'fRStartWeek');
+  fillYearMonthWeekSelects('fREndYear', 'fREndMonth', 'fREndWeek');
 }
 function formatEventRange(e){
   if(e.precision === 'week'){
-    if(e.roughMonth && e.weekStart && e.weekEnd) return weekLabel(e);
+    const wl = weekLabel(e);
+    if(wl) return wl;
     if(e.endDate) return `${e.date} ~ ${e.endDate} (주간)`;
   }
   return e.date;
@@ -279,7 +300,7 @@ function formatEventRange(e){
 
 document.getElementById('fRoughWeek').addEventListener('change', (ev) => {
   document.getElementById('fDate').style.display = ev.target.checked ? 'none' : '';
-  document.getElementById('fWeekBox').style.display = ev.target.checked ? 'grid' : 'none';
+  document.getElementById('fWeekBox').style.display = ev.target.checked ? 'block' : 'none';
 });
 populateRoughSelects();
 
@@ -449,14 +470,16 @@ function startEdit(id){
   const isWeek = e.precision === 'week';
   document.getElementById('fRoughWeek').checked = isWeek;
   document.getElementById('fDate').style.display = isWeek ? 'none' : '';
-  document.getElementById('fWeekBox').style.display = isWeek ? 'grid' : 'none';
+  document.getElementById('fWeekBox').style.display = isWeek ? 'block' : 'none';
   if(isWeek){
     document.getElementById('fDate').value = '';
-    if(e.roughMonth && e.weekStart && e.weekEnd){
-      document.getElementById('fRYear').value = e.roughYear || new Date(e.date).getFullYear();
-      document.getElementById('fRMonth').value = e.roughMonth;
-      document.getElementById('fRWeekStart').value = e.weekStart;
-      document.getElementById('fRWeekEnd').value = e.weekEnd;
+    if(e.startYear && e.startMonth && e.startWeek && e.endYear && e.endMonth && e.endWeek){
+      document.getElementById('fRStartYear').value = e.startYear;
+      document.getElementById('fRStartMonth').value = e.startMonth;
+      document.getElementById('fRStartWeek').value = e.startWeek;
+      document.getElementById('fREndYear').value = e.endYear;
+      document.getElementById('fREndMonth').value = e.endMonth;
+      document.getElementById('fREndWeek').value = e.endWeek;
     }
   } else {
     document.getElementById('fDate').value = e.date;
@@ -484,23 +507,26 @@ document.getElementById('btnAddOrUpdate').addEventListener('click', () => {
   const type = document.getElementById('fType').value;
   const description = document.getElementById('fDesc').value.trim();
 
-  let date, endDate, precision, roughYear, roughMonth, weekStart, weekEnd;
+  let date, endDate, precision, startYear, startMonth, startWeek, endYear, endMonth, endWeek;
   if(isRough){
-    roughYear = parseInt(document.getElementById('fRYear').value, 10);
-    roughMonth = parseInt(document.getElementById('fRMonth').value, 10);
-    weekStart = parseInt(document.getElementById('fRWeekStart').value, 10);
-    weekEnd = parseInt(document.getElementById('fRWeekEnd').value, 10);
+    startYear = parseInt(document.getElementById('fRStartYear').value, 10);
+    startMonth = parseInt(document.getElementById('fRStartMonth').value, 10);
+    startWeek = parseInt(document.getElementById('fRStartWeek').value, 10);
+    endYear = parseInt(document.getElementById('fREndYear').value, 10);
+    endMonth = parseInt(document.getElementById('fREndMonth').value, 10);
+    endWeek = parseInt(document.getElementById('fREndWeek').value, 10);
     if(!title){
       alert('일정명은 필수입니다.');
       return;
     }
-    if(weekEnd < weekStart){
-      alert('종료 주차는 시작 주차보다 빠를 수 없습니다.');
+    const startDate = weekPointToDate(startYear, startMonth, startWeek, false);
+    const endDateObj = weekPointToDate(endYear, endMonth, endWeek, true);
+    if(endDateObj < startDate){
+      alert('종료 시점이 시작 시점보다 빠를 수 없습니다.');
       return;
     }
-    const range = monthWeekRangeToDates(roughYear, roughMonth, weekStart, weekEnd);
-    date = range.start;
-    endDate = range.end;
+    date = fmtDate(startDate);
+    endDate = fmtDate(endDateObj);
     precision = 'week';
   } else {
     date = document.getElementById('fDate').value;
@@ -513,7 +539,7 @@ document.getElementById('btnAddOrUpdate').addEventListener('click', () => {
   }
 
   const base = { year, date, endDate, precision, title, type, description: description || undefined };
-  if(precision === 'week') Object.assign(base, { roughYear, roughMonth, weekStart, weekEnd });
+  if(precision === 'week') Object.assign(base, { startYear, startMonth, startWeek, endYear, endMonth, endWeek });
 
   if(editingId){
     const idx = DATA.events.findIndex(e => e.id === editingId);
