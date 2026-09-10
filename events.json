@@ -17,12 +17,17 @@
     {
       "id": "e1",
       "year": "y1",
-      "date": "2027-07-12",
-      "endDate": "2027-07-18",
+      "date": "2025-01-01",
+      "endDate": "2025-01-07",
       "precision": "week",
       "title": "중간결과보고",
-      "type": "보고시작",
-      "owner": ""
+      "type": "기타",
+      "startYear": 2025,
+      "startMonth": 1,
+      "startWeek": 1,
+      "endYear": 2025,
+      "endMonth": 1,
+      "endWeek": 1
     },
     {
       "id": "e2",
@@ -47,10 +52,9 @@
       "id": "e4",
       "year": "y2",
       "date": "2025-11-25",
+      "precision": "day",
       "title": "2차년도 정산 보고 마감",
-      "project": "OO사업",
-      "type": "보고마감",
-      "owner": "담당자 미정"
+      "type": "배분금"
     },
     {
       "id": "e5",
@@ -75,10 +79,9 @@
       "id": "e7",
       "year": "y3",
       "date": "2027-02-18",
+      "precision": "day",
       "title": "3차년도(최종) 정산 보고 마감",
-      "project": "OO사업",
-      "type": "보고마감",
-      "owner": "담당자 미정"
+      "type": "배분금"
     },
     {
       "id": "emttpakbg2uh7",
@@ -148,12 +151,17 @@
     {
       "id": "emttrueubmzna",
       "year": "y1",
-      "date": "2027-11-08",
-      "endDate": "2027-11-14",
+      "date": "2025-01-01",
+      "endDate": "2025-01-07",
       "precision": "week",
       "title": "1차 결과보고(1~10월분)",
-      "type": "보고시작",
-      "owner": ""
+      "type": "배분금",
+      "startYear": 2025,
+      "startMonth": 1,
+      "startWeek": 1,
+      "endYear": 2025,
+      "endMonth": 1,
+      "endWeek": 1
     },
     {
       "id": "emttrv4vwqxr2",
@@ -178,12 +186,17 @@
     {
       "id": "emttrwjmtq41y",
       "year": "y1",
-      "date": "2028-01-24",
-      "endDate": "2028-01-30",
+      "date": "2025-01-01",
+      "endDate": "2025-01-07",
       "precision": "week",
       "title": "2차 결과보고(1~12월분)",
-      "type": "보고시작",
-      "owner": ""
+      "type": "컨설팅",
+      "startYear": 2025,
+      "startMonth": 1,
+      "startWeek": 1,
+      "endYear": 2025,
+      "endMonth": 1,
+      "endWeek": 1
     },
     {
       "id": "emtv3e1ygj588",
@@ -296,6 +309,18 @@
       "dot": "#6b7480",
       "bg": "#e7e8ea",
       "text": "#454b56"
+    },
+    {
+      "name": "현지역량강화지원 프로그램",
+      "dot": "#c2678f",
+      "bg": "#f5e1ea",
+      "text": "#8a3a5c"
+    },
+    {
+      "name": "배분금",
+      "dot": "#4a9e9e",
+      "bg": "#dcf0f0",
+      "text": "#2a6363"
     }
   ]
 }
