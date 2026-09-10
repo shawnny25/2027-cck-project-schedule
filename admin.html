@@ -14,10 +14,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;700&display=swap');
 
 :root{
-  --navy:#17233d; --navy-soft:#2c3b5c; --slate:#5b6579;
-  --paper:#f4f3ee; --paper-line:#dedad0; --ink:#1c2130;
-  --amber:#c1852f; --amber-soft:#f3e2c4; --rose:#a8493f; --rose-soft:#f1dcd6;
-  --teal:#29685c; --teal-soft:#d9e9e2; --grey:#6d7484;
+  --navy:#2c333d; --navy-soft:#454f5c; --slate:#6b7480;
+  --paper:#f0f2f4; --paper-line:#dde1e6; --ink:#20242b;
+  --amber:#16b88a; --amber-soft:#cdf3e4; --rose:#a8493f; --rose-soft:#f1dcd6;
+  --teal:#4c6fa5; --teal-soft:#dde6f3; --grey:#6b7480;
 }
 *{box-sizing:border-box;}
 html,body{margin:0;padding:0;}
@@ -77,7 +77,7 @@ td.year-group-empty{color:var(--grey);font-size:12px;font-style:italic;}
 
 .status{font-size:13px;padding:10px 12px;border-radius:3px;margin-top:12px;display:none;}
 .status.show{display:block;}
-.status.ok{background:var(--teal-soft);color:#1c4038;}
+.status.ok{background:var(--teal-soft);color:#24406b;}
 .status.err{background:var(--rose-soft);color:#7a2f27;}
 .status.pending{background:#fff;border:1px solid var(--paper-line);color:var(--slate);}
 
@@ -230,11 +230,11 @@ td.year-group-empty{color:var(--grey);font-size:12px;font-style:italic;}
 
 <script>
 const TYPE_COLORS = {
-  "컨설팅": { bg: "#f3e2c4", text: "#7a5217" },
-  "모니터링": { bg: "#d9e9e2", text: "#1c4038" },
-  "보고시작": { bg: "#dbe4ee", text: "#24435f" },
+  "컨설팅": { bg: "#cdf3e4", text: "#0c6b4d" },
+  "모니터링": { bg: "#dde6f3", text: "#24406b" },
+  "보고시작": { bg: "#e6e1f3", text: "#423579" },
   "보고마감": { bg: "#f1dcd6", text: "#7a2f27" },
-  "기타": { bg: "#e4e2da", text: "#454b56" }
+  "기타": { bg: "#e4e6e9", text: "#454b56" }
 };
 
 let DATA = null;   // { years, events }
