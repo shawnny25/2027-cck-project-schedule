@@ -67,15 +67,6 @@
       "type": "기타"
     },
     {
-      "id": "emttpakbg2uh7",
-      "year": "y2",
-      "date": "2027-12-16",
-      "title": "연말 결과공유회",
-      "project": "국제나눔 파트너십지원사업",
-      "type": "기타",
-      "owner": "담당자 미정"
-    },
-    {
       "id": "emttqrwwj4mgm",
       "year": "y1",
       "date": "2027-01-22",
@@ -451,6 +442,66 @@
       "endYear": 2027,
       "endMonth": 11,
       "endWeek": 2
+    },
+    {
+      "id": "emtwamvnwd95w",
+      "year": "y2",
+      "date": "2027-12-01",
+      "endDate": "2027-12-07",
+      "precision": "week",
+      "title": "사업 평가 및 차년도 계획 심사",
+      "type": "모니터링",
+      "startYear": 2027,
+      "startMonth": 12,
+      "startWeek": 1,
+      "endYear": 2027,
+      "endMonth": 12,
+      "endWeek": 1
+    },
+    {
+      "id": "emtwanfrcbr3f",
+      "year": "y2",
+      "date": "2027-12-15",
+      "endDate": "2027-12-21",
+      "precision": "week",
+      "title": "연말 결과 공유회",
+      "type": "기타",
+      "startYear": 2027,
+      "startMonth": 12,
+      "startWeek": 3,
+      "endYear": 2027,
+      "endMonth": 12,
+      "endWeek": 3
+    },
+    {
+      "id": "emtwaov6auo2l",
+      "year": "y2",
+      "date": "2027-09-01",
+      "endDate": "2027-09-07",
+      "precision": "week",
+      "title": "2차 배분금 지원",
+      "type": "배분금",
+      "startYear": 2027,
+      "startMonth": 9,
+      "startWeek": 1,
+      "endYear": 2027,
+      "endMonth": 9,
+      "endWeek": 1
+    },
+    {
+      "id": "emtwaqcg3qzk7",
+      "year": "y2",
+      "date": "2028-01-08",
+      "endDate": "2028-01-28",
+      "precision": "week",
+      "title": "사업비 반납 및 최종 결과 보고",
+      "type": "보고",
+      "startYear": 2028,
+      "startMonth": 1,
+      "startWeek": 2,
+      "endYear": 2028,
+      "endMonth": 1,
+      "endWeek": 4
     }
   ],
   "types": [
