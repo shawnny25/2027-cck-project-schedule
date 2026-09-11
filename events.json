@@ -40,23 +40,6 @@
       "owner": ""
     },
     {
-      "id": "e3",
-      "year": "y2",
-      "date": "2025-06-10",
-      "title": "중간 사업 조정 컨설팅",
-      "project": "OO사업",
-      "type": "컨설팅",
-      "owner": "담당자 미정"
-    },
-    {
-      "id": "e4",
-      "year": "y2",
-      "date": "2025-11-25",
-      "precision": "day",
-      "title": "2차년도 정산 보고 마감",
-      "type": "기타"
-    },
-    {
       "id": "e5",
       "year": "y3",
       "date": "2026-12-10",
@@ -279,20 +262,49 @@
       "endWeek": 5
     },
     {
-      "id": "emtv7mkwet6pa",
+      "id": "emtw9m4ub8ebd",
+      "year": "y2",
+      "date": "2026-12-22",
+      "endDate": "2026-12-31",
+      "precision": "week",
+      "title": "27년도 사업 계약",
+      "type": "기타",
+      "startYear": 2026,
+      "startMonth": 12,
+      "startWeek": 4,
+      "endYear": 2026,
+      "endMonth": 12,
+      "endWeek": 5
+    },
+    {
+      "id": "emtw9nl6ends2",
       "year": "y2",
       "date": "2027-01-01",
       "endDate": "2027-01-14",
       "precision": "week",
-      "title": "테스트",
-      "type": "모니터링",
-      "description": "테스트용 1",
+      "title": "27년도 사업비 배분 신청",
+      "type": "배분금",
       "startYear": 2027,
       "startMonth": 1,
       "startWeek": 1,
       "endYear": 2027,
       "endMonth": 1,
       "endWeek": 2
+    },
+    {
+      "id": "emtw9q93yr4zq",
+      "year": "y2",
+      "date": "2027-01-08",
+      "endDate": "2027-01-21",
+      "precision": "week",
+      "title": "1차 배분금 지원",
+      "type": "배분금",
+      "startYear": 2027,
+      "startMonth": 1,
+      "startWeek": 2,
+      "endYear": 2027,
+      "endMonth": 1,
+      "endWeek": 3
     }
   ],
   "types": [
