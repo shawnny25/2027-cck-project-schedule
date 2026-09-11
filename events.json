@@ -396,7 +396,7 @@
       "date": "2027-07-01",
       "endDate": "2027-07-14",
       "precision": "week",
-      "title": "중간 결과 보고 제출",
+      "title": "중간 결과보고(1~6월)",
       "type": "보고",
       "startYear": 2027,
       "startMonth": 7,
@@ -436,6 +436,21 @@
       "endYear": 2027,
       "endMonth": 10,
       "endWeek": 5
+    },
+    {
+      "id": "emtwakvst3jd4",
+      "year": "y2",
+      "date": "2027-11-01",
+      "endDate": "2027-11-14",
+      "precision": "week",
+      "title": "1차 결과보고(1~10월)",
+      "type": "보고",
+      "startYear": 2027,
+      "startMonth": 11,
+      "startWeek": 1,
+      "endYear": 2027,
+      "endMonth": 11,
+      "endWeek": 2
     }
   ],
   "types": [
